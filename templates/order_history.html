@@ -1,0 +1,620 @@
+{% extends "base.html" %}
+{# {% block title %}Order History - My Bookings{% endblock %} #}
+
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} flash-message">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+<!-- Page Header -->
+<div class="container-custom" style="background-color:#333333;">
+    <div class="row">
+        <div class="col-12" style="background-color:#333333;">
+            <div class="page-header text-center mb-4">
+                <h1 class="display-5 fw-bold text-primary">
+                    {% if current_user.is_owner %}
+                         Owner's Turf  Bookings Overview
+                    {% else %}
+                    My Booking History
+                    {% endif %}
+                </h1>
+                <p class="lead" style="color: white;">
+                    Track and manage all your turf bookings
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Stats -->
+<div class="container-custom" style="background-color:#333333;">
+    <div class="row text-center mb-4 align-items-stretch" >
+        <div class="col-md-3 col-6 mb-3">
+            <div class="stat-card p-3 rounded-3  h-100 " style="background: linear-gradient(135deg, #e8f5e8, #c3e6cb);">
+                <i class="fas fa-calendar-check fa-2x text-success mb-2"></i>
+                <h4 class="fw-bold" style="color:black;">{{ bookings|selectattr("booking_status", "equalto", "confirmed")|list|length }}</h4>
+                <p class="mb-0" style="color: #2b2b2b;">Confirmed</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6 mb-3">
+            <div class="stat-card p-3 rounded-3  h-100" style="background: linear-gradient(135deg, #fff3cd, #ffeaa7);">
+                <i class="fas fa-clock fa-2x text-warning mb-2"></i>
+                <h4 class="fw-bold"  style="color: #2b2b2b;">{{ bookings|selectattr("payment_status", "equalto", "pending")|list|length }}</h4>
+                <p class="mb-0"  style="color: #2b2b2b;">Pending</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6 mb-3 ">
+            <div class="stat-card p-3 rounded-3  h-100" style="background: linear-gradient(135deg, #f8d7da, #f5c6cb);">
+                <i class="fas fa-ban fa-2x text-danger mb-2"></i>
+                <h4 class="fw-bold"  style="color: #2b2b2b;">{{ bookings|selectattr("booking_status", "equalto", "cancelled")|list|length }}</h4>
+                <p class=" mb-0"  style="color: #2b2b2b;">Cancelled</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6 mb-3">
+            <div class="stat-card p-3 rounded-3  h-100" style="background: linear-gradient(135deg, #d1ecf1, #bee5eb);">
+                <i class="fas fa-rupee-sign fa-2x text-info mb-2"></i>
+                {% if current_user.is_owner %}
+
+                    <h4 class="fw-bold " style="color: #2b2b2b;">
+                        {{ "%.0f"|format( bookings | selectattr("payment_status", "equalto", "completed") | map(attribute="total_amount") | sum  ) }}
+                    </h4>
+                    <p style="color: #2b2b2b;">Total Revenue</p>
+
+                {% else %}
+
+                    <h4 class="fw-bold" style="color: #2b2b2b;">
+                        {{ "%.0f"|format(
+                            (bookings | selectattr("payment_status", "equalto", "completed") | map(attribute="total_amount") | sum)
+                            -
+                            (bookings | selectattr("payment_status", "equalto", "refunded") | map(attribute="total_amount") | sum)
+                         ) }}
+                    </h4>
+                    <p style="color: #2b2b2b;">Total Spent</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Booking Filters -->
+<div class="container-custom"  style="background-color: #333333;">
+    <div class="filter-section mb-4">
+        <div class="row align-items-center">
+            <div class="col-md-8">
+                <div class="filter-buttons">
+                    <button class="btn btn-outline-primary active" data-filter="all">
+                        <i class="fas fa-list me-1"></i>All Bookings
+                    </button>
+                    <button class="btn btn-outline-success" data-filter="confirmed">
+                        <i class="fas fa-check me-1"></i>Confirmed
+                    </button>
+                    <button class="btn btn-outline-warning" data-filter="pending">
+                        <i class="fas fa-clock me-1"></i>Pending
+                    </button>
+                    <button class="btn btn-outline-danger" data-filter="cancelled">
+                        <i class="fas fa-ban me-1"></i>Cancelled
+                    </button>
+                </div>
+            </div>
+            <div class="col-md-4 text-end">
+                <div class="sort-section">
+                   <select class="form-select form-select-sm d-inline-block w-auto" 
+                            id="sortBookings"
+                            onchange="applySortFilter(this.value)">
+    
+                        <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Newest First</option>
+                        <option value="oldest" {% if current_sort == 'oldest' %}selected{% endif %}>Oldest First</option>
+                        <option value="amount-high" {% if current_sort == 'amount-high' %}selected{% endif %}>Amount: High to Low</option>
+                        <option value="amount-low" {% if current_sort == 'amount-low' %}selected{% endif %}>Amount: Low to High</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Bookings List -->
+<div class="container-custom"  style="background-color: #333333;">
+    {% if bookings %}
+        <div class="bookings-list" >
+            {% for booking in bookings %}
+                {% set can_refund = booking.created_at and (now - booking.created_at).total_seconds() < 86400 %}
+                {% if booking.created_at %}
+                    {% set hours_left = 24 - ((now - booking.created_at).total_seconds() // 3600) %}
+                {% else %}
+                    {% set hours_left = 0 %}
+                {% endif %}
+                <div class="booking-card card mb-4" data-status="{{ booking.booking_status }}" data-payment="{{ booking.payment_status }}">
+                    <div class="card-body">
+                        <div class="row align-items-center">
+                            <!-- Turf Image -->
+                            <div class="col-md-3">
+                                <div class="turf-image-container position-relative">
+                                    <img src="{{ booking.turf.image_url }}" class="img-fluid rounded-3" 
+                                         alt="{{ booking.turf.name }}" style="height: 120px; width: 100%; object-fit: cover;">
+                                   
+                                    <div class="position-absolute top-0 end-0 m-2">
+                                       {% if booking.payment_status == 'completed' %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check me-1"></i>Completed
+                                            </span>
+
+                                        {% elif booking.payment_status == 'pending' %}
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-clock me-1"></i>Pending
+                                            </span>
+
+                                        {% elif booking.payment_status == 'refunded' %}
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-undo me-1"></i>Refunded
+                                            </span>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Booking Details -->
+                            <div class="col-md-6">
+                                <div class="booking-details">
+                                    <h5 class="fw-bold text-primary mb-2">{{ booking.turf.name }}</h5>
+                                    <p class=" mb-2"  style="color: white;">
+                                        <i class="fas fa-map-marker-alt me-1"  style="color:white;"></i>{{ booking.turf.location }}
+                                    </p>
+                                    
+                                    <div class="booking-schedule mb-2">
+                                        <div class="d-flex align-items-center mb-1">
+                                            <i class="fas fa-calendar-day text-primary me-2"></i>
+                                            <span class="fw-bold">{{ booking.booking_date.strftime('%A, %B %d, %Y') }}</span>
+                                        </div>
+                                        <div class="d-flex align-items-center">
+                                            <i class="fas fa-clock text-success me-2"></i>
+                                            <span>{{ booking.start_time.strftime('%I:%M %p') }} - {{ booking.end_time.strftime('%I:%M %p') }}</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="booking-meta">
+                                        <small  style="color: white;">
+                                            <i class="fas fa-receipt me-1"></i>
+                                            Booking ID: #{{ booking.id }} | 
+                                            Booked on: {{ booking.created_at.strftime('%b %d, %Y') }}
+                                        </small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Price and Actions -->
+                            <div class="col-md-3">
+                                <div class="booking-actions text-center">
+                                    <div class="price-info mb-3">
+                                        <h4 class="fw-bold text-success mb-1">₹{{ "%.0f"|format(booking.total_amount) }}</h4>
+                                       
+                                        <small class="text-muted">
+                                             Payment: 
+                                             {% if booking.payment_status == 'completed' %}
+                                                <span class="text-success fw-bold">Paid</span>
+                                             {% elif booking.payment_status == 'pending' %}
+                                                <span class="text-warning fw-bold">Pending</span>
+                                             {% elif booking.payment_status == 'refunded' %}
+                                                <span class="text-danger fw-bold">Refunded</span>
+                                             {% endif %}
+                                        </small>
+                                    </div>
+                                    
+                                    <div class="action-buttons">
+
+                                        {% if booking.payment_status == 'refunded' %}
+
+                                            <div class="text-center text-danger small fw-bold mt-2">
+                                                <i class="fas fa-info-circle me-1"></i>
+                                                This booking has been refunded
+                                            </div>
+                                        
+                                        {% elif booking.booking_status == 'confirmed' %}
+                                            <div class="d-grid gap-2">''
+                                                <button class="btn btn-outline-primary btn-sm" onclick="showBookingDetails('{{ booking.id }}')">
+                                                    <i class="fas fa-eye me-1"></i>View Details
+                                                </button>
+                                                
+                                                <a href="{{ url_for('cancel_booking', booking_id=booking.id) }}" 
+                                                       class="btn btn-outline-danger btn-sm"
+                                                       onclick="return confirm('Are you sure you want to cancel this booking?')">
+                                                       <i class="fas fa-ban me-1"></i>Cancel
+                                                </a>
+                                                
+                                                {% if booking.payment_status == 'completed' and can_refund %}
+
+                                                    <button class="btn btn-outline-danger btn-sm refund-btn" data-booking-id="{{ booking.id }}">
+                                                        <i class="fas fa-undo me-1"></i>Request Refund
+                                                    </button>
+
+                                                    <small class="text-warning d-block">
+                                                        <i class="fa-regular fa-clock"></i> {{ [hours_left,0]|max | int }} hrs left for refund
+                                                    </small>
+
+                                                {% elif booking.payment_status == 'completed' and not can_refund %}
+
+                                                    <small class="text-danger">
+                                                        <i class="fa-solid fa-xmark"></i> Refund Time Expired
+                                                    </small>
+
+                                                {% endif %}
+                                                       
+                                                <button class="btn btn-outline-secondary btn-sm" onclick="downloadReceipt('{{ booking.id }}')">
+                                                    <i class="fas fa-download me-1"></i>Receipt
+                                                </button>
+                                            </div>
+                                        
+                                       
+                                        
+                                            
+                                        {% elif booking.booking_status == 'cancelled' %}
+                                            <div class="d-grid gap-2">
+                                                <button class="btn btn-outline-primary btn-sm" onclick="viewDetails('{{ booking.id }}')">
+                                                    <i class="fas fa-eye me-1"></i>View Details
+                                                </button>
+                                                <a href="{{ url_for('all_bookings') }}" class="btn btn-primary btn-sm">
+                                                    <i class="fas fa-plus me-1"></i>Book Again
+                                                </a>
+                                            </div>
+                                         {% elif booking.booking_status == 'pending' %}
+                                            <div class="d-grid gap-2">
+                                                <button class="btn btn-warning btn-sm">
+                                                    <i class="fas fa-hourglass-half me-1"></i>Processing
+                                                </button>
+                                                <button class="btn btn-outline-primary btn-sm" onclick="viewDetails('{{ booking.id }}')">
+                                                    <i class="fas fa-eye me-1"></i>View Details
+                                                </button>
+                                            </div>
+                                        {% endif %}
+                                        
+                                       
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}  
+        </div>
+        
+        <!-- Pagination -->
+        <div class="pagination-section text-center mt-5">
+            <p  style="color: white;">Showing {{ bookings|length }} of {{ bookings|length }} bookings</p>
+        </div>
+    {% else %}
+        <!-- No Bookings -->
+        <div class="no-bookings text-center py-5">
+            <i class="fas fa-calendar-times fa-5x text-muted mb-4"></i>
+            <h3 class="text-muted mb-3">No Bookings Yet</h3>
+            <p class="lead text-muted mb-4">You haven't made any turf bookings yet. Start exploring our amazing turfs!</p>
+            <a href="{{ url_for('all_bookings') }}" class="btn btn-primary btn-lg">
+                <i class="fas fa-calendar-plus me-2"></i>Book Your First Turf
+            </a>
+        </div>
+        
+    {% endif %}
+</div>
+
+<!-- Booking Details Modal -->
+
+
+<div class="modal fade" id="bookingDetailsModal" tabindex="-1" aria-labelledby="bookingDetailsModalLabel" aria-hidden="true">
+      <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content bg-dark-card border-secondary">
+          <div class="modal-header">
+            <h5 class="modal-title" id="bookingDetailsModalLabel" style="color:#333333">Booking Details</h5>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body" id="bookingDetailsModalBody">
+            </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          </div>
+        </div>
+      </div>
+</div>
+
+<style>
+    .stat-card {
+        transition: transform 0.3s ease;
+        border: none;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .booking-card {
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+        transition: all 0.3s ease;
+       ;
+    }
+    
+    .booking-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+    
+    .filter-buttons .btn {
+        margin-right: 10px;
+        margin-bottom: 10px;
+    }
+    
+    .filter-buttons .btn.active {
+        background-color: #667eea;
+        border-color: #667eea;
+        color: white;
+    }
+    
+    .turf-image-container {
+        overflow: hidden;
+        border-radius: 10px;
+    }
+    
+    .booking-schedule {
+        background: rgba(102, 126, 234, 0.1);
+        padding: 10px;
+        border-radius: 8px;
+    }
+    
+    .page-header {
+        background: #333333;
+        border-radius: 15px;
+        padding: 2rem;
+    }
+    
+    .no-bookings {
+        min-height: 500px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    
+    
+    #bookingDetailsModalBody * {
+         color: #2b2b2b !important; 
+    }
+    #bookingDetailsModalBody strong {
+        color: #2b2b2b!important;
+    }
+    @media (max-width: 768px) {
+        .filter-buttons {
+            text-align: center;
+        }
+        
+        .filter-buttons .btn {
+            margin: 5px;
+            font-size: 0.875rem;
+        }
+        
+        .sort-section {
+            text-align: center;
+            margin-top: 1rem;
+        }
+        
+        .booking-actions {
+            margin-top: 1rem;
+            text-align: center;
+        }
+
+       
+    }
+</style>
+
+<script>
+    // Filter functionality
+    document.querySelectorAll('[data-filter]').forEach(button => {
+        button.addEventListener('click', function() {
+            
+            document.querySelectorAll('[data-filter]').forEach(btn => btn.classList.remove('active'));
+            this.classList.add('active');
+            
+            const filter = this.getAttribute('data-filter');
+            const bookingCards = document.querySelectorAll('.booking-card');
+            
+            bookingCards.forEach(card => {
+                if (filter === 'all') {
+                    card.style.display = 'block';
+                } else {
+                    const status = card.getAttribute('data-status');
+                    const payment = card.getAttribute('data-payment');
+                    
+                    if (filter === 'confirmed' && status === 'confirmed') {
+                        card.style.display = 'block';
+                    } else if (filter === 'pending' && payment === 'pending') {
+                        card.style.display = 'block';
+                    } else if (filter === 'cancelled' && status === 'cancelled') {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                }
+            });
+        });
+    });
+    
+    // Sort functionality
+    document.getElementById('sortBookings').addEventListener('change', function() {
+        const sortType = this.value;
+        const container = document.querySelector('.bookings-list');
+        const bookingCards = Array.from(container.children);
+        
+        bookingCards.sort((a, b) => {
+            switch(sortType) {
+                case 'newest':
+                    return new Date(b.querySelector('[data-created]')?.getAttribute('data-created') || 0) - 
+                           new Date(a.querySelector('[data-created]')?.getAttribute('data-created') || 0);
+                case 'oldest':
+                    return new Date(a.querySelector('[data-created]')?.getAttribute('data-created') || 0) - 
+                           new Date(b.querySelector('[data-created]')?.getAttribute('data-created') || 0);
+                case 'amount-high':
+                    return parseFloat(b.querySelector('.price-info h4').textContent.replace('₹', '')) - 
+                           parseFloat(a.querySelector('.price-info h4').textContent.replace('₹', ''));
+                case 'amount-low':
+                    return parseFloat(a.querySelector('.price-info h4').textContent.replace('₹', '')) - 
+                           parseFloat(b.querySelector('.price-info h4').textContent.replace('₹', ''));
+                default:
+                    return 0;
+            }
+        });
+        
+        // Re-append sorted cards
+        bookingCards.forEach(card => container.appendChild(card));
+    });
+    
+    // View booking details
+   
+function showBookingDetails(bookingId) {
+    
+    
+    const modalBody = document.getElementById('bookingDetailsModalBody');
+    const modalElement = document.getElementById('bookingDetailsModal');
+
+    // Display a loading message immediately
+    modalBody.innerHTML = `
+        <div class="text-center py-5">
+            <div class="spinner-border text-primary" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Loading booking details...</p>
+        </div>`;
+    
+    // Show the modal
+    const bookingModal = new bootstrap.Modal(modalElement);
+    bookingModal.show();
+
+    // 2. Fetch the detailed HTML snippet from the Flask route
+    fetch(`/get_booking_details/${bookingId}`)
+        .then(response => {
+            if (!response.ok) {
+                // If the response is not OK (e.g., 403 Forbidden, 404 Not Found), throw an error
+                throw new Error('Could not fetch booking details.');
+            }
+            return response.text(); // Get the rendered HTML snippet
+        })
+        .then(html => {
+            
+            modalBody.innerHTML = html;
+        })
+        .catch(error => {
+            // Handle any network or server-side error
+            modalBody.innerHTML = `
+                <div class="alert alert-danger">
+                    Error loading details. Check console for details.
+                </div>`;
+            console.error("Fetch Error:", error);
+        });
+}
+    
+    // Download receipt
+    function downloadReceipt(bookingId) {
+        
+        const receiptText = `
+        TURF BOOKING RECEIPT
+        ====================
+
+        Booking ID: #${bookingId}
+        Customer: {{ current_user.username }}
+        Email: {{ current_user.email }}
+
+    
+
+        Thank you for choosing Turf PlayGrounds Booking!
+        `;
+        
+        const blob = new Blob([receiptText], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `TurfBooking_Receipt_${bookingId}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }
+    
+    // Auto-refresh for pending bookings (every 30 seconds)
+    const pendingBookings = document.querySelectorAll('[data-payment="pending"]');
+    if (pendingBookings.length > 0) {
+        setInterval(() => {
+            // In a real application, you would check for status updates
+            console.log('Checking for booking status updates...');
+        }, 30000);
+    }
+
+function applySortFilter(sortValue) {
+   
+    const urlParams = new URLSearchParams(window.location.search);
+    const status = urlParams.get('status') || 'all'; 
+    
+    
+    window.location.href = `{{ url_for('order_history') }}?status=${status}&sort_by=${sortValue}`;
+}
+
+
+document.addEventListener("click", async (e) => {
+  if (!e.target.closest(".refund-btn")) return;
+
+  const btn = e.target.closest(".refund-btn");
+  const bookingId = btn.dataset.bookingId;
+
+  if (!confirm("Are you sure you want to cancel and refund this booking?")) return;
+
+  btn.disabled = true;
+
+  const res = await fetch(`/refund/${bookingId}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" }
+  });
+
+  const data = await res.json();
+
+  if (data.success) {
+    alert("Refund processed successfully");
+    location.reload();
+  } else {
+    alert(data.error);
+    btn.disabled = false;
+  }
+});
+
+function viewDetails(bookingId) {
+
+    fetch(`/get_booking_details/${bookingId}`)
+    .then(res => res.text())
+    .then(html => {
+
+        document.getElementById("bookingDetailsModalBody").innerHTML = html;
+
+        const modal = new bootstrap.Modal(
+            document.getElementById("bookingDetailsModal")
+        );
+        modal.show();
+    })
+    .catch(err => {
+        console.error(err);
+        alert("Failed to load booking details.");
+    });
+}
+
+setTimeout(() => {
+    const flashes = document.querySelectorAll('.flash-message');
+    flashes.forEach(flash => {
+      flash.style.transition = 'opacity 0.5s ease';
+      flash.style.opacity = '0';
+      setTimeout(() => flash.remove(), 500);
+    });
+  }, 3000); // 3 seconds
+
+</script>
+
+
+{% endblock %}

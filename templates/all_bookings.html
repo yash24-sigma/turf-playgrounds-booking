@@ -1,0 +1,407 @@
+{% extends "base.html" %}
+
+{# {% block title %}Book a Turf - Turf PlayGrounds Booking {% endblock %} #}
+
+{% block content %}
+<!-- Page Header -->
+<div class="container-custom " style="background-color:#333333;">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-header text-center mb-4">
+                <h1 class="display-5 fw-bold text-primary">
+                    <i class="fas fa-calendar-plus me-3"></i>Book Your Perfect Turf
+                </h1>
+                <p class="lead " style="color:white;">Choose from our premium collection of sports turfs</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--  Search and Filter Section -->
+<div class="search-container mt-4" style="background-color:#333333;">
+    <div class="container">
+        <form method="GET" class="row g-3">
+            <div class="col-md-4">
+                <label for="search" class="form-label fw-bold"  style="color:white;">
+                    <i class="fas fa-search me-2 text-primary" ></i>Search Turfs
+                </label>
+                <div class="input-group">
+                    <span class="input-group-text">
+                        <i class="fas fa-search text-muted"></i>
+                    </span>
+                    <input type="text" class="form-control" id="search" name="search" 
+                           placeholder="Search by turf name, description..." 
+                           value="{{ search_query }}">
+                </div>
+            </div>
+            
+            <div class="col-md-4">
+                <label for="location" class="form-label fw-bold" style="color:white;">
+                    <i class="fas fa-map-marker-alt me-2 text-primary" ></i>Filter by Location
+                </label>
+                <select class="form-select" id="location" name="location">
+                    <option value="">All Locations</option>
+                    {% for location in locations %}
+                        <option value="{{ location }}" 
+                                {% if location == location_filter %}selected{% endif %}>
+                            {{ location }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="col-md-3 d-flex align-items-end">
+                <div class="btn-group w-100" role="group">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search me-2"></i>Search
+                    </button>
+                    <a href="{{ url_for('all_bookings') }}" class="btn btn-outline-secondary" style="color:white;">
+                        <i class="fas fa-refresh me-2" style="color:white;"></i>Reset
+                    </a>
+                </div>
+            </div>
+        </form>
+        
+        <!-- Quick Filter Tags -->
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="quick-filters">
+                    <span style="color:#2b222b;"class=" fw-bold me-3">Quick Filters:</span>
+                    <a href="{{ url_for('all_bookings', location='Borivali') }}" class="btn btn-outline-primary btn-sm me-2 fw-bold" ">
+                        <i class="fas fa-map-pin me-1"></i>Borivali
+                    </a>
+                    <a href="{{ url_for('all_bookings', location='Malad') }}" class="btn btn-outline-primary btn-sm me-2 fw-bold">
+                        <i class="fas fa-map-pin me-1"></i>Malad 
+                       
+                    </a>
+                    <a href="{{ url_for('all_bookings', location='Kandivali') }}" class="btn btn-outline-primary btn-sm me-2 fw-bold">
+                        <i class="fas fa-map-pin me-1"></i>Kandivali
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Results Summary -->
+{% if search_query or location_filter %}
+<div class="container-custom" >
+    <div class="alert alert-info" role="alert">
+        <i class="fas fa-info-circle me-2"></i>
+        Showing {{ turfs|length }} result(s) 
+        {% if search_query %}for "<strong>{{ search_query }}</strong>"{% endif %}
+        {% if location_filter %}in "<strong>{{ location_filter }}</strong>"{% endif %}
+        <a href="{{ url_for('all_bookings') }}" class="btn btn-sm btn-outline-primary ms-3">
+            <i class="fas fa-times me-1"></i>Clear Filters
+        </a>
+    </div>
+</div>
+{% endif %}
+
+<!-- Turfs Grid -->
+<div class="container-custom" style="background-color:#333333;">
+    {% if turfs %}
+        <div class="row g-4">
+            {% for turf in turfs %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="card h-100 turf-card position-relative">
+                        <!-- Availability Badge -->
+                        <div class="position-absolute top-0 start-0 m-2 z-index-1">
+                            <span class="badge bg-success">
+                                <i class="fas fa-check-circle me-1"></i>Available
+                            </span>
+                        </div>
+                        
+                        <!-- Price Badge -->
+                        <div class="position-absolute top-0 end-0 m-2 z-index-1">
+                            <span class="badge bg-primary fs-6">
+                                <i class="fas fa-rupee-sign"></i>{{ "%.0f"|format(turf.price_per_hour) }}/hr
+                            </span>
+                        </div>
+                        
+                        <div class="card-img-container position-relative">
+                            <img src="{{ turf.image_url }}" class="card-img-top" alt="{{ turf.name }}" 
+                                 style="height: 220px; object-fit: cover;">
+                            <div class="card-img-overlay d-flex align-items-end p-0">
+                                <div class="w-100 bg-gradient-dark p-3">
+                                    <h5 class="card-title text-white fw-bold mb-1">{{ turf.name }}</h5>
+                                    <p class="mb-0" style="color:white;">
+                                        <i class="fas fa-map-marker-alt me-1" style="color:white;"></i>{{ turf.location }}
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body d-flex flex-column">
+                            <p style="color:white;"class="card-text mb-3">{{ turf.description[:80] }}...</p>
+                            
+                            
+                           <!-- Features -->
+                            <div class="features-section mb-2">
+                                 {% if turf.floodlights %}
+                                    <span class="badge bg-light text-dark w-100 p-2 mb-1">
+                                        <i class="fas fa-lightbulb text-warning me-1"></i> Floodlights
+                                    </span>
+                                {% endif %}
+
+                                {% if turf.parking %}
+                                    <span class="badge bg-light text-dark w-100 p-2 mb-1">
+                                        <i class="fas fa-car text-primary me-1"></i> Parking
+                                    </span>
+                                {% endif %}
+
+                                {% if turf.wifi %}
+                                    <span class="badge bg-light text-dark w-100 p-2 mb-1">
+                                        <i class="fas fa-wifi text-info me-1"></i> WiFi
+                                    </span>
+                                {% endif %}
+
+                                {% if turf.restrooms %}
+                                    <span class="badge bg-light text-dark w-100 p-2 mb-1">
+                                        <i class="fas fa-restroom text-secondary me-1"></i> Restrooms
+                                    </span>
+                                {% endif %}
+
+                                {% if turf.refreshments %}
+                                    <span class="badge bg-light text-dark w-100 p-2 mb-1">
+                                        <i class="fas fa-coffee text-success me-1"></i> Refreshments
+                                    </span>
+                                {% endif %}
+                            </div>
+                                
+                            <!-- Rating -->
+                            <div class="rating mb-3">
+                                <div class="d-flex align-items-center">
+                                    {% set rating = turf.avg_rating %}
+                                    {% set reviews_count = turf.reviews_count %}
+                                    {% set full_stars = rating | int %}
+                                    {% set remainder = rating - full_stars %}
+                                    {% set has_half_star = remainder >= 0.25 and remainder < 0.75 %}
+                                    {% set total_stars = full_stars + (1 if has_half_star else 0) %}
+                                    {% set empty_stars = 5 - total_stars %}
+
+                                    <div class="stars text-warning me-2">
+
+                                        {# Full Stars #}
+                                        {% for i in range(full_stars) %}
+                                        <i class="fa fa-star"></i>
+                                        {% endfor %}
+
+                                        {# Half Star #}
+                                        {% if has_half_star %}
+                                        <i class="fa fa-star-half-alt"></i>
+                                        {% endif %}
+
+                                        {# Empty Stars #}
+                                        {% for i in range(empty_stars) %}
+                                        <i class="fa fa-star-o"></i>
+                                        {% endfor %}
+                                    </div>
+
+                                    <span style="color:white;">
+                                        {{ "%.1f"|format(rating) }} ({{ reviews_count }} reviews)
+                                    </span>
+                                </div>
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="mt-auto">
+                                <div class="d-grid gap-2">
+                                    <a href="{{ url_for('turf_details', turf_id=turf.id) }}" 
+                                       class="btn btn-primary">
+                                        <i class="fas fa-calendar-plus me-2"></i>Book Now
+                                    </a>
+                                    <a href="{{ url_for('turf_details', turf_id=turf.id) }}" 
+                                       class="btn btn-outline-primary btn-sm">
+                                        <i class="fas fa-info-circle me-1"></i>View Details & Availability
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination would go here -->
+        <div class="row mt-5">
+            <div class="col-12 text-center">
+                <p class="text-muted">Showing {{ turfs|length }} of {{ turfs|length }} available turfs</p>
+            </div>
+        </div>
+    {% else %}
+        <!-- No Results -->
+        <div class="no-results text-center py-5">
+            <div class="mb-4">
+                <i class="fas fa-search fa-5x " style="color:white;"></i>
+            </div>
+            <h3 style="color:white;" class="mb-3">No turfs found</h3>
+            <p class="lead  mb-4" style="color:white;">
+                {% if search_query or location_filter %}
+                    We couldn't find any turfs matching your criteria. Try adjusting your filters.
+                {% else %}
+                    No turfs are currently available for booking.
+                {% endif %}
+            </p>
+            <div class="d-flex justify-content-center gap-3">
+                <a href="{{ url_for('all_bookings') }}" class="btn btn-primary">
+                    <i class="fas fa-refresh me-2"></i>Show All Turfs
+                </a>
+                <a href="{{ url_for('homepage') }}" class="btn btn-outline-secondary" style="color:white;">
+                    <i class="fas fa-home me-2"></i>Back to Dashboard
+                </a>
+            </div>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Call to Action -->
+<div class="container-custom" style="background-color:#333333;">
+    <div class="cta-section text-center p-4 rounded-3" style="background-color: #333333;">
+        <h4 class="fw-bold text-primary mb-3">Can't find the perfect turf?</h4>
+        <p style="color:white" class="bold mb-3">Contact us and we'll help you find exactly what you're looking for!</p>
+        <div class="d-flex justify-content-center gap-3">
+            <div class="d-flex justify-content-center gap-3">
+            <a href="https://wa.me/919930689823?text=Hi%20I%20need%20help%20with%20turf%20booking" target="_blank"  class="btn btn-success">
+                <i class="fab fa-whatsapp me-2"></i> WhatsApp Us
+            </a>
+
+            <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#contactEmailModal">
+                <i class="fas fa-envelope me-2"></i>Email Us
+            </button>
+
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="contactEmailModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-white">
+
+      <div class="modal-header">
+        <h5 class="modal-title">Email Support</h5>
+        <button type="button" class="btn-close btn-close-white"
+                data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body text-center">
+        <p>You can reach us at:</p>
+
+        <p class="fw-bold text-primary">
+          killerscattxgod95@gmail.com
+        </p>
+
+        <!-- OPEN EMAIL APP (SAFE) -->
+        <a href="https://mail.google.com/mail/?view=cm&fs=1&to=teamturfplaygroundsbooking@gmail.com&su=Turf%20Enquiry"  target="_blank" class="btn btn-success w-100 text-center mb-3">
+                Open Email App
+        </a>
+
+        <!-- COPY EMAIL -->
+        <button class="btn btn-outline-secondary w-100" onclick="copyEmail()" >
+            Copy Email Address
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+<style>
+    .turf-card {
+        transition: all 0.3s ease;
+        border: none;
+        overflow: hidden;
+    }
+    
+    .turf-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .card-img-container {
+        overflow: hidden;
+    }
+    
+    .turf-card:hover .card-img-top {
+        transform: scale(1.05);
+        transition: transform 0.3s ease;
+    }
+    
+    .bg-gradient-dark {
+        background: linear-gradient(to top, rgba(0,0,0,0.8), rgba(0,0,0,0.4), transparent);
+    }
+      
+    .quick-filters {
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.7);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        
+    }
+    
+    .features .badge {
+        font-size: 0.75rem;
+    }
+    
+    .stars {
+        font-size: 0.9rem;
+    }
+    
+    .z-index-1 {
+        z-index: 1;
+    }
+    
+    .no-results {
+        min-height: 400px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    
+    .form-label {
+    color: #2b222b; /* A dark gray color */
+    }    
+    
+    @media (max-width: 768px) {
+        .quick-filters {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        .quick-filters > * {
+            margin-bottom: 0.5rem;
+        }
+        
+        .features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.25rem;
+        }
+    }
+</style>
+
+<script>
+function openEmail() {
+  const mailto = "mailto:killerscattxgod95@gmail.com?subject=Turf Enquiry";
+  const gmail = "https://mail.google.com/mail/?view=cm&fs=1&to=killerscattxgod95@gmail.com&su=Turf%20Enquiry";
+
+  window.location.href = mailto;
+
+  setTimeout(() => {
+    window.open(gmail, "_blank");
+  }, 800);
+}
+
+function copyEmail() {
+  navigator.clipboard.writeText("killerscattxgod95@gmail.com");
+  alert("Email address copied!");
+}
+</script>
+
+{% endblock %}

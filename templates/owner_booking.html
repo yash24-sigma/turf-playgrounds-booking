@@ -1,0 +1,107 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="container mt-4">
+
+    <h2 class="text-success mb-4">Owner's Turf Bookings Overview</h2>
+
+    <!-- SUMMARY CARDS -->
+    {% set total_revenue = 0 %}
+    {% set confirmed = 0 %}
+    {% set pending = 0 %}
+    {% set cancelled = 0 %}
+
+    {% for booking in bookings %}
+        {% if booking.payment_status == 'completed' %}
+            {% set total_revenue = total_revenue + booking.total_amount %}
+        {% endif %}
+
+        {% if booking.booking_status == 'confirmed' %}
+            {% set confirmed = confirmed + 1 %}
+        {% elif booking.booking_status == 'pending' %}
+            {% set pending = pending + 1 %}
+        {% elif booking.booking_status == 'cancelled' %}
+            {% set cancelled = cancelled + 1 %}
+        {% endif %}
+    {% endfor %}
+
+    <div class="row text-center mb-4">
+        <div class="col-md-3">
+            <div class="card bg-success text-white p-3">
+                <h4>{{ confirmed }}</h4>
+                <p>Confirmed</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card bg-warning text-dark p-3">
+                <h4>{{ pending }}</h4>
+                <p>Pending</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card bg-danger text-white p-3">
+                <h4>{{ cancelled }}</h4>
+                <p>Cancelled</p>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="card bg-info text-dark p-3">
+                <h4>₹{{ total_revenue }}</h4>
+                <p>Total Revenue</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- BOOKINGS LIST -->
+    {% for booking in bookings %}
+    <div class="card mb-3 shadow-sm">
+        <div class="row g-0">
+
+            <div class="col-md-3">
+                <img src="{{ booking.turf.image_url }}" class="img-fluid rounded-start" alt="turf">
+            </div>
+
+            <div class="col-md-6 p-3">
+                <h5 class="text-success">{{ booking.turf.name }}</h5>
+                <p>📍 {{ booking.turf.location }}</p>
+
+                <p>📅 {{ booking.booking_date.strftime('%A, %d %B %Y') }}</p>
+                <p>⏰ {{ booking.start_time }} - {{ booking.end_time }}</p>
+
+                <small>
+                    Booking ID: #{{ booking.id }} |
+                    Booked on: {{ booking.created_at.strftime('%d %b %Y') }}
+                </small>
+            </div>
+
+            <div class="col-md-3 p-3 text-end">
+                <h5 class="text-success">₹{{ booking.total_amount }}</h5>
+
+                <p>
+                    Payment:
+                    {% if booking.payment_status == 'completed' %}
+                        <span class="text-success">Paid</span>
+                    {% elif booking.payment_status == 'pending' %}
+                        <span class="text-warning">Pending</span>
+                    {% elif booking.payment_status == 'refunded' %}
+                        <span class="text-danger">Refunded</span>
+                    {% endif %}
+                </p>
+
+                {% if booking.payment_status == 'refunded' %}
+                    <p class="text-danger">This booking was refunded</p>
+                {% endif %}
+            </div>
+
+        </div>
+    </div>
+    {% else %}
+        <p class="text-center text-muted">No bookings found.</p>
+    {% endfor %}
+
+</div>
+
+{% endblock %}

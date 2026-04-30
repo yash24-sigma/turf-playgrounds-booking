@@ -1,0 +1,9 @@
+.env
+.vscode/
+*.pdf
+*.docx
+*.code-workspace
+__pycache__/
+*.pyc
+venv/
+instance/

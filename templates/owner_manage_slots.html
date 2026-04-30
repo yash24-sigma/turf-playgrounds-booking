@@ -1,0 +1,110 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} flash-message">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div class="container mt-4">
+
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h3 class="text-success">
+            <i class="fas fa-clock me-2"></i>Manage Slots - {{ turf.name }}
+        </h3>
+
+        <div>
+            <a href="{{ url_for('create_slot', turf_id=turf.id) }}"
+               class="btn btn-success">
+                <i class="fas fa-plus me-1"></i> Add Slot
+            </a>
+
+            <form method="POST" action="{{ url_for('generate_slots', turf_id=turf.id) }}" style="display:inline;">
+                 <button type="submit"  class="btn btn-warning" onclick="return confirm('Generate slots for next 7 days?');">
+                    <i class="fas fa-magic me-1"></i> Auto Generate 7 Days
+                </button>
+            </form>
+        </div>
+    </div>
+
+    {% if slots %}
+        <div class="row">
+            {% for slot in slots %}
+            <div class="col-md-6 mb-3">
+                <div class="card bg-dark border-secondary p-3">
+
+                    <div class="d-flex justify-content-between">
+
+                        <div>
+                            <h6 class="text-light">
+                                {{ slot.date.strftime('%d %b %Y') }}
+                            </h6>
+
+                            <p class="text-muted mb-1">
+                                {{ slot.start_time.strftime('%I:%M %p') }}
+                                -
+                                {{ slot.end_time.strftime('%I:%M %p') }}
+                            </p>
+
+                            <h5 class="text-success">
+                                ₹{{ "%.0f"|format(slot.final_price) }}
+                            </h5>
+
+                            {% if slot.is_weekend %}
+                                <span class="badge bg-danger">🔥 Weekend</span>
+                            {% endif %}
+
+                            {% if slot.is_holiday %}
+                                <span class="badge bg-warning text-dark">
+                                    🎉 Holiday
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="text-end">
+                            <a href="{{ url_for('edit_slot', slot_id=slot.id) }}"
+                               class="btn btn-outline-primary btn-sm mb-2">
+                                Edit
+                            </a>
+
+                            <form method="POST"
+                                  action="{{ url_for('delete_slot', slot_id=slot.id) }}">
+                                <button class="btn btn-outline-danger btn-sm">
+                                    Delete
+                                </button>
+                            </form>
+                        </div>
+
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center text-muted">
+            <h5>No slots created yet</h5>
+        </div>
+    {% endif %}
+
+</div>
+
+<script>
+
+    setTimeout(() => {
+    const flashes = document.querySelectorAll('.flash-message');
+    flashes.forEach(flash => {
+      flash.style.transition = 'opacity 0.5s ease';
+      flash.style.opacity = '0';
+      setTimeout(() => flash.remove(), 500);
+    });
+  }, 3000); // 3 seconds
+
+</script>
+
+{% endblock %}

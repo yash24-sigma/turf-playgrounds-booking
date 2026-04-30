@@ -1,0 +1,132 @@
+{% extends "base.html" %}
+
+{% block title %}Owner Settings{% endblock %}
+
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} flash-message">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<div class="container mt-5">
+    <div class="card p-4">
+        <h2 class="text-primary mb-4">Owner Settings and Preferences</h2>
+        <p style="color:white">This is where you will manage turf prices, availability rules, and profile settings.</p>
+        
+        </div>
+</div>
+
+<div class="container mt-5">
+<div class="card p-4 bg-dark-card border-secondary">
+    <h4 class="text-white mb-3"><i class="fas fa-lock me-2"></i>Change Password</h4>
+
+    {% if current_user.password_hash %}
+        <form method="POST" action="{{ url_for('change_password') }}">
+            <div class="mb-3">
+                <label for="old-password" class="form-label text-light">Current Password</label>
+                <div class="input-group">
+                    <input type="password" class="form-control" id="old-password-field" name="old_password" required>
+                    <button class="btn btn-outline-secondary password-toggle-btn" type="button" data-target="old-password-field">
+                        <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div class="mb-3">
+                <label for="new-password" class="form-label text-light">New Password</label>
+                <div class="input-group">
+                    <input type="password" class="form-control" id="new-password-field" name="new_password" required>
+                    <button class="btn btn-outline-secondary password-toggle-btn" type="button" data-target="new-password-field">
+                    <i class="fas fa-eye"></i>
+                    </button>
+                </div>
+                 <button type="submit" class="btn btn-success mt-3">Update Password</button>
+            </div>
+    {% else %}
+        <p class="text-danger lead">Your account is not secured. Please set a password now.</p>
+        <form method="POST" action="{{ url_for('set_initial_password') }}">
+            <div class="mb-3">
+                <label for="new-password-initial" class="form-label text-light">Set New Password</label>
+                <div class="input-group">
+                    <input type="password" class="form-control" id="new-password-initial-field" name="new_password" required>
+                    <button class="btn btn-outline-secondary password-toggle-btn" type="button" data-target="new-password-initial-field">
+                        <i class="fas fa-eye"></i>
+                    </button>   
+                </div>
+                 <button type="submit" class="btn btn-success mt-3">Secure Account</button>
+            </div>
+           
+        </form>
+    {% endif %}
+</div>
+</div>
+
+
+
+
+<div class="container mt-5">
+   
+
+    <div class="card p-4 mb-4 bg-dark-card border-secondary">
+        <h4 class="text-white mb-3"><i class="fas fa-futbol me-2"></i>Turf Pricing & Details</h4>
+        <p class="text-muted">Manage details and prices for your listed turfs.</p>
+        
+        {% for turf in current_user.turfs %}
+        <div class="d-flex justify-content-between align-items-center border-bottom py-2">
+            <span class="text-white">{{ turf.name }}</span>
+            <a href="{{ url_for('edit_turf', turf_id=turf.id) }}" class="btn btn-sm btn-outline-warning">Edit Details</a>
+        </div>
+        {% endfor %}
+        
+        <a href="{{ url_for('add_turf') }}" class="btn btn-sm btn-success mt-3"><i class="fas fa-plus me-2"></i>Add New Turf</a>
+    </div>
+    
+    
+</div>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleButtons = document.querySelectorAll('.password-toggle-btn');
+        
+        toggleButtons.forEach(button => {
+            button.addEventListener('click', function() {
+                const targetId = this.getAttribute('data-target');
+                const passwordField = document.getElementById(targetId);
+                const icon = this.querySelector('i');
+
+                if (passwordField.type === 'password') {
+                    // Show password
+                    passwordField.type = 'text';
+                    icon.classList.remove('fa-eye');
+                    icon.classList.add('fa-eye-slash');
+                } else {
+                    // Hide password
+                    passwordField.type = 'password';
+                    icon.classList.remove('fa-eye-slash');
+                    icon.classList.add('fa-eye');
+                }
+            });
+        });
+    });
+
+    setTimeout(() => {
+    const flashes = document.querySelectorAll('.flash-message');
+    flashes.forEach(flash => {
+      flash.style.transition = 'opacity 0.5s ease';
+      flash.style.opacity = '0';
+      setTimeout(() => flash.remove(), 500);
+    });
+  }, 3000); // 3 seconds
+
+</script>
+
+{% endblock %}
+

@@ -1,0 +1,15 @@
+<div class="row">
+    <div class="col-md-6">
+        <p class="mb-2 text-white"><strong>Turf:</strong> <span class="text-white">{{ booking.turf.name }}</span></p>
+        <p class="mb-2 text-white"><strong>Date:</strong> <span class="text-white">{{ booking.booking_date.strftime('%a, %B %d, %Y') }}</span></p>
+        <p class="mb-2 text-white"><strong>Time:</strong> <span class="text-white">{{ booking.start_time.strftime('%I:%M %p') }} - {{ booking.end_time.strftime('%I:%M %p') }}</span></p>
+        <p class="mb-2 text-white"><strong>Status:</strong> <span class="badge bg-success">{{ booking.booking_status }}</span></p>
+    </div>
+    
+    <div class="col-md-6">
+        <p class="mb-2 text-white"><strong>Amount:</strong> <span class="text-white">₹{{ "%.0f"|format(booking.total_amount) }}</span></p>
+        <p class="mb-2 text-white"><strong>Payment:</strong> <span class="badge bg-primary">{{ booking.payment_status }}</span></p>
+        <p class="mb-2 text-white"><strong>Booked By:</strong> <span class="text-white">{{ booking.user.username }}</span></p>
+        <p class="mb-2 text-white"><strong>Booked On:</strong> <span class="text-white">{{ booking.created_at.strftime('%Y-%m-%d') }}</span></p>
+    </div>
+</div>

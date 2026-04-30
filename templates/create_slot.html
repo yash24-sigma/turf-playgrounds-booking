@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} flash-message">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div class="container mt-4">
+
+    <h3 class="text-success mb-4">
+        <i class="fas fa-plus me-2"></i>Create Slot - {{ turf.name }}
+    </h3>
+
+    <div class="card bg-dark border-secondary p-4">
+
+        <form method="POST" action="{{ url_for('create_slot', turf_id=turf.id) }}" >
+
+            <div class="mb-3">
+                <label class="form-label text-light">Date</label>
+                <input type="date" name="date" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-light">Start Time</label>
+                <input type="time" name="start_time" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-light">End Time</label>
+                <input type="time" name="end_time" class="form-control" required>
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label text-light">Base Price</label>
+                <input type="number" name="base_price" class="form-control" required>
+            </div>
+
+            <div class="form-check mb-3">
+                <input class="form-check-input"
+                       type="checkbox"
+                       name="is_holiday">
+                <label class="form-check-label text-light">
+                    Mark as Holiday Slot
+                </label>
+            </div>
+
+            <button class="btn btn-success">
+                Create Slot
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+setTimeout(() => {
+    const flashes = document.querySelectorAll('.flash-message');
+    flashes.forEach(flash => {
+      flash.style.transition = 'opacity 0.5s ease';
+      flash.style.opacity = '0';
+      setTimeout(() => flash.remove(), 500);
+    });
+  }, 3000); // 3 seconds
+
+</script>
+
+{% endblock %}

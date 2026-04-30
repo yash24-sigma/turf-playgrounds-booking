@@ -1,0 +1,76 @@
+{% extends "admin_layout.html" %}
+{% block content %}
+
+<h3 class="mb-4">Admin Refund Dashboard</h3>
+
+<table class="table table-dark table-striped">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>User</th>
+      <th>Amount</th>
+      <th>Status</th>
+      <th>Refunded At</th>
+      <th>Action</th>
+    </tr>
+  </thead>
+
+  <tbody>
+    {% for b in bookings %}
+    <tr>
+      <td>#{{ b.id }}</td>
+      <td>{{ b.user.username }}</td>
+      <td>₹{{ "%.2f"|format(b.total_amount) }}</td>
+
+      <td>
+        {% if b.payment_status == "completed" %}
+          <span class="badge bg-success">Paid</span>
+        {% elif b.payment_status == "refunded" %}
+          <span class="badge bg-danger">Refunded</span>
+        {% else %}
+          <span class="badge bg-warning">Pending</span>
+        {% endif %}
+      </td>
+
+      <td>{{ b.refunded_at or "-" }}</td>
+
+      <td>
+        {% if b.payment_status == "completed" %}
+        <button class="btn btn-danger btn-sm admin-refund-btn"
+                data-id="{{ b.id }}">
+          Refund
+        </button>
+        {% else %}
+        —
+        {% endif %}
+      </td>
+    </tr>
+    {% endfor %}
+  </tbody>
+</table>
+
+<script>
+document.addEventListener("click", async (e) => {
+  if (!e.target.classList.contains("admin-refund-btn")) return;
+
+  const bookingId = e.target.dataset.id;
+
+  if (!confirm("Refund this booking?")) return;
+
+  const res = await fetch(`/admin/refund/${bookingId}`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" }
+  });
+
+  const data = await res.json();
+
+  if (data.success) {
+    alert("Refund successful");
+    location.reload();
+  } else {
+    alert(data.error);
+  }
+});
+</script>
+
+{% endblock %}

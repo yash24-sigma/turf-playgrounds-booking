@@ -1,0 +1,135 @@
+{% extends "admin_layout.html" %}
+{% block content %}
+
+<h2 class="mb-4">Manage Users</h2>
+
+<div class="card-custom shadow mb-3">
+    <p class="mb-0">Total Users: <strong>{{ users|length }}</strong></p>
+</div>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show mb-3 flash-auto-hide">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+<table class="table-dark-custom">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Username</th>
+            <th>Email</th>
+            <th>Registered On</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for user in users %}
+        <tr>
+            <td>{{ user.id }}</td>
+            <td>{{ user.username }}</td>
+            <td>{{ user.email }}</td>
+           <td>
+                {% if user.created_at %}
+                    <span class="badge bg-info text-dark">
+                        {{ user.created_at.strftime('%d %b %Y') }}
+                    </span>
+                    <br>
+                    <small class="text-muted">{{ user.time_ago }}</small>
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+            <td>
+                {% if user.active %}
+                    <a href="{{ url_for('block_user', user_id=user.id) }}"
+                        class="btn btn-sm btn-danger"
+                        onclick="return confirm('Block this user?')">
+                        Block
+                    </a>
+                {% else %}
+                    <a href="{{ url_for('unblock_user', user_id=user.id) }}"
+                        class="btn btn-sm btn-success"
+                        onclick="return confirm('Unblock this user?')">
+                        Unblock
+                    </a>
+                {% endif %}
+            </td>        
+            
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+
+<style>
+/* Dark mode table */
+.table-dark-custom {
+    width: 100%;
+    border-collapse: collapse;
+    background: #1f1f1f;
+    color: #fff;
+}
+
+.table-dark-custom thead {
+    background: #292929;
+    color: #00eaff;
+}
+
+.table-dark-custom th,
+.table-dark-custom td {
+    padding: 14px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.table-dark-custom tbody tr:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+.table-dark-custom tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Make table responsive on mobile */
+.table-responsive {
+    overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+    .table-dark-custom th,
+    .table-dark-custom td {
+        padding: 10px 8px;
+        font-size: 14px;
+    }
+}
+
+.badge {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    border-radius: 5px;
+}
+
+.text-muted {
+    opacity: 0.75;
+}
+</style>
+
+
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  setTimeout(() => {
+    document.querySelectorAll(".flash-auto-hide").forEach(el => {
+      el.classList.remove("show");
+      el.classList.add("fade");
+      setTimeout(() => el.remove(), 500);
+    });
+  }, 3000);
+});
+</script>
+
+{% endblock %}

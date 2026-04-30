@@ -1,0 +1,107 @@
+{% extends "admin_layout.html" %}
+{% block content %}
+
+<h2 class="mb-4">Manage Owners</h2>
+
+<div class="card-custom shadow mb-3">
+    <p class="mb-0">Total Owners: <strong>{{ owners|length }}</strong></p>
+</div>
+
+<table class="table-dark-custom">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Owner Name</th>
+            <th>Email</th>
+            <th>Joined</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for owner in owners %}
+        <tr>
+            <td>{{ owner.id }}</td>
+            <td>{{ owner.username }}</td>
+            <td>{{ owner.email }}</td>
+            <td>
+                {% if owner.created_at %}
+                    <span class="badge bg-info text-dark">
+                        {{ owner.created_at.strftime('%d %b %Y') }}
+                    </span>
+                    <br>
+                    <small class="text-muted">{{ owner.time_ago }}</small>
+                {% else %}
+                    —
+                {% endif %}
+            </td>
+
+
+            <td>
+                <a href="{{ url_for('block_owner', owner_id=owner.id) }}"
+                   class="btn btn-sm btn-warning"
+                   onclick="return confirm('Disable this owner?');">
+                    Disable
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<style>
+/* Dark mode table */
+.table-dark-custom {
+    width: 100%;
+    border-collapse: collapse;
+    background: #1f1f1f;
+    color: #fff;
+}
+
+.table-dark-custom thead {
+    background: #292929;
+    color: #00eaff;
+}
+
+.table-dark-custom th,
+.table-dark-custom td {
+    padding: 14px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.table-dark-custom tbody tr:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+.table-dark-custom tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Make table responsive on mobile */
+.table-responsive {
+    overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+    .table-dark-custom th,
+    .table-dark-custom td {
+        padding: 10px 8px;
+        font-size: 14px;
+    }
+}
+
+.badge {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+}
+
+.bg-info {
+    background-color: #17a2b8;
+}
+.text-dark {
+    color: #000;
+}
+</style>
+
+
+{% endblock %}

@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{# {% block title %}Login - Turf PlayGrounds Booking {% endblock %} #}
+
+{% block content %}
+<div class="container-custom">
+  <div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+
+      <!-- Header -->
+      <div class="text-center mb-4">
+        <i class="fas fa-sign-in-alt fa-3x text-primary mb-3"></i>
+        <h2 class="fw-bold text-primary">Welcome Back!</h2>
+        <p style="color:white;">Sign in to your account to continue</p>
+      </div>
+      {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+          {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show mb-3 flash-auto-hide">
+              {{ message }}
+              <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+          {% endfor %}
+        {% endif %}
+      {% endwith %}
+
+      <!-- Login Form -->
+      <form method="POST" class="needs-validation" novalidate autocomplete="off">
+        
+
+        <!-- Autofill prevention  -->
+        <input type="text" name="fakeusernameremembered" style="display:none">
+        <input type="password" name="fakepasswordremembered" style="display:none">
+
+        <!-- Username -->
+        <div class="mb-3">
+          <label for="username" class="form-label" style="color:white;">
+            <i class="fas fa-user me-2"></i>Username
+          </label>
+          <input
+            type="text"
+            class="form-control"
+            id="username"
+            name="username"
+            autocomplete="off"
+            required>
+          <div class="invalid-feedback">
+            Please enter your username.
+          </div>
+        </div>
+
+        <!-- Password -->
+        <div class="mb-3">
+          <label for="password" class="form-label" style="color:white;">
+            <i class="fas fa-lock me-2"></i>Password
+          </label>
+          <div class="input-group">
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              name="password"
+              autocomplete="new-password"
+              required>
+            <button
+              class="btn btn-outline-secondary"
+              type="button"
+              id="togglePassword">
+              <i class="fas fa-eye"></i>
+            </button>
+          </div>
+          <div class="invalid-feedback">
+            Please enter your password.
+          </div>
+        </div>
+
+        <!-- Remember Me -->
+        <div class="mb-3 form-check">
+          <input
+            type="checkbox"
+            class="form-check-input"
+            id="rememberMe"
+            name="remember"
+            style="cursor:pointer;">
+          <label class="form-check-label" for="rememberMe" style="color:white;">
+            Remember me
+          </label>
+        </div>
+
+        <!-- Submit -->
+        <button type="submit" class="btn btn-primary w-100 mb-3">
+          <i class="fas fa-sign-in-alt me-2"></i>Sign In
+        </button>
+
+        <!-- Signup -->
+        <div class="text-center">
+          <p class="mb-2" style="color:white;">Don't have an account?</p>
+          <a href="{{ url_for('signup') }}" class="btn btn-outline-primary">
+            <i class="fas fa-user-plus me-2"></i>Create Account
+          </a>
+        </div>
+
+      </form>
+
+    </div>
+  </div>
+</div>
+<style>
+    .container-custom{
+        background: #333333;
+    }
+</style>
+
+<script>
+    // Form validation
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+    
+    // Toggle password visibility
+    document.getElementById('togglePassword').addEventListener('click', function() {
+        const password = document.getElementById('password');
+        const icon = this.querySelector('i');
+        
+        if (password.type === 'password') {
+            password.type = 'text';
+            icon.classList.remove('fa-eye');
+            icon.classList.add('fa-eye-slash');
+        } else {
+            password.type = 'password';
+            icon.classList.remove('fa-eye-slash');
+            icon.classList.add('fa-eye');
+        }
+    });
+
+
+
+
+</script>
+{% endblock %}

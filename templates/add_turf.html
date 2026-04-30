@@ -1,0 +1,711 @@
+{% extends "base.html" %}
+
+{# {% block title %}Add New Turf - Owner Dashboard{% endblock %} #}
+
+{% block content %}
+<!-- Page Header -->
+<div class="container-custom" style="background-color:#333333;">
+    <div class="row">
+        <div class="col-12">
+            <div class="page-header text-center mb-4">
+                <h1 class="display-5 fw-bold text-primary">
+                    <i class="fas fa-plus-circle me-3"></i>Add New Turf
+                </h1>
+                <p class="lead" style="color:white;">Create a new turf listing for customers to book</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Add Turf Form -->
+    <div class="col-lg-8">
+        <div class="container-custom" style="background-color:#333333;">
+            <form method="POST" class="needs-validation" novalidate  action="{{ url_for('add_turf') }}" enctype="multipart/form-data" >
+                <!-- Basic Information -->
+                <div class="card mb-4">
+                    <div class="card-header bg-primary text-white">
+                        <h5 class="fw-bold mb-0">
+                            <i class="fas fa-info-circle me-2"></i>Basic Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="name" class="form-label fw-bold">
+                                        <i class="fas fa-futbol me-2"></i>Turf Name *
+                                    </label>
+                                    <input type="text" class="form-control" id="name" name="name" 
+                                           placeholder="Enter Turf Name (e.g.,D.G Ruparel TurfZone)" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a turf name.
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="price_per_hour" class="form-label fw-bold">
+                                        <i class="fas fa-rupee-sign me-2"></i>Price per Hour (₹) *
+                                    </label>
+                                    <input type="number" class="form-control" id="price_per_hour" name="price_per_hour" 
+                                           placeholder="500" min="1" step="1" required>
+                                    <div class="invalid-feedback">
+                                        Please provide a valid price.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="location" class="form-label fw-bold">
+                                <i class="fas fa-map-marker-alt me-2"></i>Location *
+                            </label>
+                            <input type="text" class="form-control" id="location" name="location" 
+                                   placeholder="e.g., Andheri West, Mumbai, Maharashtra" required>
+
+                            <div class="invalid-feedback">
+                                Please provide the turf location.
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label fw-bold">
+                                <i class="fas fa-align-left me-2"></i>Description *
+                            </label>
+                            <textarea class="form-control" id="description" name="description" rows="4" 
+                                      placeholder="Describe your turf facilities, features, and what makes it special..." required></textarea>
+                            <div class="invalid-feedback">
+                                Please provide a description.
+                            </div>
+                            <div class="form-text">
+                                <small style="color:white;">Include details about surface type, lighting, facilities, etc.</small>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="image" class="form-label fw-bold">
+                                <i class="fas fa-image me-2"></i>Upload Turf Image *
+                            </label>
+                            <input type="file" class="form-control" id="image" name="image" 
+                                   accept="image/*" required>
+                            <div class="invalid-feedback">
+                                Please select an  image file.
+                            </div>
+                            <div class="form-text">
+                                <small style="color:white;">Select a high-quality of your turf</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Facilities and Features -->
+                <div class="card mb-4">
+                    <div class="card-header bg-success text-white">
+                        <h5 class="fw-bold mb-0">
+                            <i class="fas fa-list-check me-2"></i>Facilities & Features
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h6 class="fw-bold mb-3">Available Facilities:</h6>
+                                <div class="facilities-checklist">
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="floodlights" name="floodlights">
+                                        <label class="form-check-label" for="floodlights">
+                                            <i class="fas fa-lightbulb text-warning me-1"></i>Floodlights
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="parking" name="parking">
+                                        <label class="form-check-label" for="parking">
+                                            <i class="fas fa-car text-primary me-1"></i>Parking Available
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="wifi" name="wifi" >
+                                        <label class="form-check-label" for="wifi">
+                                            <i class="fas fa-wifi text-info me-1"></i>WiFi Access
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="restrooms" name="restrooms">
+                                        <label class="form-check-label" for="restrooms">
+                                            <i class="fas fa-restroom text-secondary me-1"></i>Restrooms
+                                        </label>
+                                    </div>
+                                    <div class="form-check mb-2">
+                                        <input class="form-check-input" type="checkbox" id="refreshments" name="refreshments">
+                                        <label class="form-check-label" for="refreshments">
+                                            <i class="fas fa-coffee text-brown me-1"></i>Refreshments
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-md-6">
+                                <h6 class="fw-bold mb-3">Turf Specifications:</h6>
+                                <div class="mb-3">
+                                    <label for="surface_type" class="form-label">Surface Type</label>
+                                    <select class="form-select" id="surface_type" name="surface_type">
+                                        <option value="artificial">Artificial Turf</option>
+                                        <option value="natural">Natural Grass</option>
+                                        <option value="hybrid">Hybrid Surface</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label for="length" class="form-label">Length (m)</label>
+                                            <input type="number" class="form-control" id="length" name="length" placeholder="100">
+                                        </div>
+                                    </div>
+                                    <div class="col-6">
+                                        <div class="mb-3">
+                                            <label for="width" class="form-label">Width (m)</label>
+                                            <input type="number" class="form-control" id="width" name="width" placeholder="60">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="capacity" class="form-label">Player Capacity</label>
+                                    <select class="form-select" id="capacity">
+                                        <option value="10">10 Players (5v5)</option>
+                                        <option value="14">14 Players (7v7)</option>
+                                        <option value="22" selected>22 Players (11v11)</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Operating Hours -->
+                <div class="card mb-4">
+                    <div class="card-header bg-warning text-dark">
+                        <h5 class="fw-bold mb-0">
+                            <i class="fas fa-clock me-2"></i>Operating Hours
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="opening_time" class="form-label fw-bold">Opening Time</label>
+                                    <input type="time" class="form-control" id="opening_time" name="opening_time" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="closing_time" class="form-label fw-bold">Closing Time</label>
+                                    <input type="time" class="form-control" id="closing_time" name = "closing_time" required>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Available Days</label>
+                            <div class="days-selector">
+                                <div class="row">
+                                    {% for day in ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'] %}
+                                        <div class="col-md-3 col-6">
+                                            <div class="form-check">
+                                                <input class="form-check-input" type="checkbox" id="{{ day.lower() }}" name="available_days" value="{{ day }}" >
+                                                <label class="form-check-label" for="{{ day.lower() }}">
+                                                    {{ day }}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Contact Information -->
+                <div class="card mb-4">
+                    <div class="card-header bg-info text-white">
+                        <h5 class="fw-bold mb-0">
+                            <i class="fas fa-phone me-2"></i>Contact Information
+                        </h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="contact_phone" class="form-label fw-bold">
+                                        <i class="fas fa-phone me-2"></i>Contact Phone
+                                    </label>
+                                    <input type="tel" class="form-control" id="contact_phone" name="contact_phone"
+                                           placeholder="+91 98765 43210">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label for="contact_email" class="form-label fw-bold">
+                                        <i class="fas fa-envelope me-2"></i>Contact Email
+                                    </label>
+                                    <input type="email" class="form-control" id="contact_email" name="contact_email"
+                                           placeholder="turf@example.com">
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="address" class="form-label fw-bold">
+                                <i class="fas fa-map me-2"></i>Complete Address
+                            </label>
+                            <textarea class="form-control" id="address" name="address" rows="3" 
+                                      placeholder="Full address with landmarks for easy navigation..."></textarea>
+                        </div>
+                        <div id="pickMap" style="height:400px;width:100%;border-radius:10px;"></div>
+                        <input type="hidden" name="latitude" id="latitude">
+                        <input type="hidden" name="longitude" id="longitude">
+                    </div>
+                </div>
+                
+                <!-- Terms and Conditions -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="checkbox" id="terms_owner" required>
+                            <label class="form-check-label" for="terms_owner">
+                                I agree to the <a href="#" class="text-primary" data-bs-toggle="modal" data-bs-target="#ownerTermsModal">Turf Owner Terms & Conditions</a>
+                            </label>
+                            <div class="invalid-feedback">
+                                You must agree to the terms and conditions.
+                            </div>
+                        </div>
+                        
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="data_accuracy">
+                            <label class="form-check-label" for="data_accuracy">
+                                I confirm that all provided information is accurate and up-to-date
+                            </label>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Submit Buttons -->
+                <div class="form-actions d-flex gap-3 mb-4">
+                    <button type="submit" class="btn btn-success btn-lg flex-fill">
+                        <i class="fas fa-save me-2"></i>Add Turf
+                    </button>
+                    <a href="{{ url_for('owner_dashboard') }}" class="btn btn-outline-secondary btn-lg" style="color:white;">
+                        <i class="fas fa-arrow-left me-2" style="color:white;"></i>Cancel
+                    </a>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Preview and Help Sidebar -->
+    <div class="col-lg-4">
+        <div class="container-custom" style="background-color:#333333;">
+            <!-- Live Preview -->
+            <div class="card preview-card mb-4 position-sticky" style="top: 100px;">
+                <div class="card-header bg-secondary text-white">
+                    <h6 class="fw-bold mb-0">
+                        <i class="fas fa-eye me-2"></i>Live Preview
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div id="turf-preview">
+                        <div class="preview-image mb-3">
+                            <img id="preview-img" src="https://images.unsplash.com/photo-1529900748604-07564a03e7a6?w=400&h=200&fit=crop" 
+                                 class="img-fluid rounded-3" style="width: 100%; height: 150px; object-fit: cover;">
+                        </div>
+                        <h6 id="preview-name" class="fw-bold text-primary">Your Turf Name</h6>
+                        <p id="preview-location" class="small">
+                            <i class="fas fa-map-marker-alt me-1" style="color:white;"></i>Your Location
+                        </p>
+                        <p id="preview-description" class="small">Your turf description will appear here...</p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <span id="preview-price" class="fw-bold text-success">₹0/hour</span>
+                            <button class="btn btn-primary btn-sm" disabled>
+                                <i class="fas fa-calendar-plus me-1"></i>Book Now
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Help Section -->
+            <div class="card help-card" style="background-color:#333333;">
+                <div class="card-header bg-info text-white">
+                    <h6 class="fw-bold mb-0">
+                        <i class="fas fa-question-circle me-2"></i>Need Help?
+                    </h6>
+                </div>
+                <div class="card-body" style="background-color: #333333;">
+                    <div class="help-item mb-3">
+                        <h6 class="fw-bold" style="color: #2b2b2b;">
+                            <i class="fas fa-camera me-2 text-primary"></i>Image Tips
+                        </h6>
+                        <ul class="small" style="color: #2b2b2b;">
+                            <li>Use high-resolution images (min 800x600)</li>
+                            <li>Show the full turf from multiple angles</li>
+                            <li>Include facility shots (lighting, seating)</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="help-item mb-3">
+                        <h6 class="fw-bold" style="color: #2b2b2b;">
+                            <i class="fas fa-pencil-alt me-2 text-success"></i>Description Tips
+                        </h6>
+                        <ul class="small" style="color: #2b2b2b;">
+                            <li>Mention surface type and quality</li>
+                            <li>List all available facilities</li>
+                            <li>Include nearby landmarks</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="help-item">
+                        <h6 class="fw-bold" style="color: #2b2b2b;">
+                            <i class="fas fa-dollar-sign me-2 text-warning"></i>Pricing Tips
+                        </h6>
+                        <ul class="small" style="color: #2b2b2b;">
+                            <li>Research competitor pricing</li>
+                            <li>Consider peak/off-peak rates</li>
+                            <li>Factor in your facility quality</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="text-center mt-4">
+                        <button class="btn btn-outline-info btn-sm"  data-bs-toggle="modal" data-bs-target="#contactSupportModal">
+                            <i class="fas fa-headset me-1"></i>Contact Support
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Owner Terms & Conditions Modal -->
+<div class="modal fade" id="ownerTermsModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered modal-dialog-scrollable">
+    <div class="modal-content bg-dark text-light">
+
+      <div class="modal-header">
+        <h5 class="modal-title text-success">
+          Turf Owner Terms & Conditions
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+
+        <h6 class="text-warning">1. Turf Listing</h6>
+        <p>
+          Turf owners must provide accurate information regarding location,
+          pricing, availability, and facilities.
+        </p>
+
+        <h6 class="text-warning">2. Bookings & Payments</h6>
+        <p>
+          All payments are handled securely via the platform.
+          Turf owners receive payouts after successful bookings.
+        </p>
+
+        <h6 class="text-warning">3. Refund Policy</h6>
+        <p>
+          Refunds are allowed only if cancellation is requested
+          at least <strong>24 hours</strong> before the booking time.
+        </p>
+
+        <h6 class="text-warning">4. Turf Availability</h6>
+        <p>
+          Turf owners are responsible for keeping availability updated.
+        </p>
+
+        <h6 class="text-warning">5. Platform Rights</h6>
+        <p>
+          The platform reserves the right to suspend or remove listings
+          that violate policies.
+        </p>
+
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-success" data-bs-dismiss="modal">
+          I Understand
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- Contact Support Modal -->
+<div class="modal fade" id="contactSupportModal" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content bg-dark text-white">
+
+      <div class="modal-header">
+        <h5 class="modal-title">
+          <i class="fas fa-headset me-2"></i>
+          Contact Support
+        </h5>
+        <button type="button" class="btn-close btn-close-white"
+                data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <p><i class="fas fa-envelope me-2"></i> turfplaygroundsbooking.com</p>
+        <p><i class="fas fa-phone me-2"></i> +91 98765 43210</p>
+
+        <hr>
+
+        <p class="small text-muted">
+          Our support team is available 24/7 for owners.
+        </p>
+      </div>
+
+      <div class="modal-footer">
+        <button class="btn btn-secondary" data-bs-dismiss="modal">
+          Close
+        </button>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+
+
+<style>
+    .page-header {
+        background: #333333;
+        border-radius: 15px;
+        padding: 2rem;
+    }
+    
+    .card {
+        border: none;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+    
+    .facilities-checklist .form-check {
+        padding: 8px 12px;
+        border-radius: 8px;
+        transition: background-color 0.3s ease;
+    }
+    
+    .facilities-checklist .form-check:hover {
+        background-color: rgba(102, 126, 234, 0.05);
+    }
+    
+    .days-selector .form-check {
+        padding: 8px;
+        margin-bottom: 8px;
+    }
+    
+    .preview-card {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .help-card {
+        background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+    }
+    
+    .help-item {
+        padding: 15px;
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 8px;
+        transition: transform 0.3s ease;
+    }
+    
+    .help-item:hover {
+        transform: translateY(-2px);
+    }
+    
+    .form-actions {
+        background: rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        border-radius: 15px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    @media (max-width: 992px) {
+        .preview-card {
+            position: static !important;
+            margin-bottom: 2rem;
+        }
+    }
+</style>
+
+<script>
+
+    // Live preview functionality
+    document.addEventListener('DOMContentLoaded', function() {
+        const nameInput = document.getElementById('name');
+        const locationInput = document.getElementById('location');
+        const descriptionInput = document.getElementById('description');
+        const priceInput = document.getElementById('price_per_hour');
+        const imageInput = document.getElementById('image');
+        
+        const previewName = document.getElementById('preview-name');
+        const previewLocation = document.getElementById('preview-location');
+        const previewDescription = document.getElementById('preview-description');
+        const previewPrice = document.getElementById('preview-price');
+        const previewImg = document.getElementById('preview-img');
+        
+        // Update preview on input changes
+        nameInput.addEventListener('input', function() {
+            previewName.textContent = this.value || 'Your Turf Name';
+        });
+        
+        locationInput.addEventListener('input', function() {
+            previewLocation.innerHTML = `<i class="fas fa-map-marker-alt me-1"></i>${this.value || 'Your Location'}`;
+        });
+        
+        descriptionInput.addEventListener('input', function() {
+            const desc = this.value || 'Your turf description will appear here...';
+            previewDescription.textContent = desc.length > 80 ? desc.substring(0, 80) + '...' : desc;
+        });
+        
+        priceInput.addEventListener('input', function() {
+            previewPrice.textContent = `₹${this.value || '0'}/hour`;
+        });
+        
+        imageInput.addEventListener('change', function () {
+            const file = this.files[0];
+            if (file) {
+                previewImg.src = URL.createObjectURL(file);
+            }
+        });
+
+    });
+    
+    // Form validation
+    (function() {
+        'use strict';
+        window.addEventListener('load', function() {
+            var forms = document.getElementsByClassName('needs-validation');
+            var validation = Array.prototype.filter.call(forms, function(form) {
+                form.addEventListener('submit', function(event) {
+                    if (form.checkValidity() === false) {
+                        event.preventDefault();
+                        event.stopPropagation();
+                    }
+                    form.classList.add('was-validated');
+                }, false);
+            });
+        }, false);
+    })();
+    
+    // Image URL validation
+    document.getElementById('image_url').addEventListener('blur', function() {
+        const url = this.value;
+        if (url && !url.match(/\.(jpeg|jpg|gif|png)$/i)) {
+            this.setCustomValidity('Please provide a valid image URL (jpg, jpeg, png, gif)');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+    
+    // Price validation
+    document.getElementById('price_per_hour').addEventListener('input', function() {
+        const price = parseFloat(this.value);
+        if (price < 1) {
+            this.setCustomValidity('Price must be at least ₹1 per hour');
+        } else if (price > 10000) {
+            this.setCustomValidity('Price seems too high. Please verify.');
+        } else {
+            this.setCustomValidity('');
+        }
+    });
+    
+    // Auto-save draft functionality
+    function saveDraft() {
+        const formData = {
+            name: document.getElementById('name').value,
+            location: document.getElementById('location').value,
+            description: document.getElementById('description').value,
+            price: document.getElementById('price_per_hour').value,
+            image_url: document.getElementById('image_url').value
+        };
+        
+        localStorage.setItem('turf_draft', JSON.stringify(formData));
+        
+        // Show saved notification
+        const toast = document.createElement('div');
+        toast.className = 'alert alert-success position-fixed';
+        toast.style.cssText = 'top: 100px; right: 20px; z-index: 9999;';
+        toast.innerHTML = '<i class="fas fa-check me-2"></i>Draft saved automatically';
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.remove();
+        }, 3000);
+    }
+    
+    // Load draft on page load
+    window.addEventListener('load', function() {
+        const draft = localStorage.getItem('turf_draft');
+        if (draft) {
+            const data = JSON.parse(draft);
+            if (confirm('We found a saved draft. Would you like to restore it?')) {
+                document.getElementById('name').value = data.name || '';
+                document.getElementById('location').value = data.location || '';
+                document.getElementById('description').value = data.description || '';
+                document.getElementById('price_per_hour').value = data.price || '';
+                document.getElementById('image_url').value = data.image_url || '';
+                
+                // Trigger preview updates
+                document.getElementById('name').dispatchEvent(new Event('input'));
+                document.getElementById('location').dispatchEvent(new Event('input'));
+                document.getElementById('description').dispatchEvent(new Event('input'));
+                document.getElementById('price_per_hour').dispatchEvent(new Event('input'));
+                document.getElementById('image_url').dispatchEvent(new Event('input'));
+            }
+        }
+    });
+    
+    // Auto-save every 30 seconds
+    setInterval(saveDraft, 30000);
+
+</script>
+
+<script>
+    
+document.addEventListener("DOMContentLoaded", function () {
+
+    const mapDiv = document.getElementById("pickMap");
+
+    if (!mapDiv) return;   // safety check
+
+    const map = L.map('pickMap').setView([19.0760, 72.8777], 12);
+
+    L.tileLayer(
+        'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+    ).addTo(map);
+
+    setTimeout(() => {
+        map.invalidateSize();
+    }, 200);
+
+    let marker;
+
+    map.on('click', function(e){
+
+        if(marker){
+            map.removeLayer(marker);
+        }
+
+        marker = L.marker(e.latlng).addTo(map);
+
+        document.getElementById("latitude").value = e.latlng.lat;
+        document.getElementById("longitude").value = e.latlng.lng;
+    });
+
+});
+
+</script>
+{% endblock %}

@@ -1,0 +1,112 @@
+{% extends "admin_layout.html" %}
+{% block content %}
+
+<h2 class="mb-4">Admin Dashboard</h2>
+
+<div class="row">
+
+    <div class="col-md-3 mb-3">
+        <div class="card-custom shadow">
+            <h4>{{ owners|length }}</h4>
+            <p class="fw-bold">Total Owners</p>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card-custom shadow">
+            <h4>{{ users|length }}</h4>
+            <p class="fw-bold">Total Users</p>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card-custom shadow">
+            <h4>{{ turfs|length }}</h4>
+            <p class="fw-bold">Total Turfs</p>
+        </div>
+    </div>
+
+    <div class="col-md-3 mb-3">
+        <div class="card-custom shadow">
+            <h4>{{ total_bookings }}</h4>
+            <p class="fw-bold">Total Bookings</p>
+        </div>
+    </div>
+
+</div>
+
+<hr class="my-4">
+
+<h4 class="text-white mb-3">Bookings by Location</h4>
+
+<div class="table-responsive mt-4">
+    <table class="table-dark-custom">
+        <thead>
+            <tr>
+                <th>Location</th>
+                <th>Total Bookings</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for loc, count in bookings_by_location %}
+            <tr>
+                <td>{{ loc }}</td>
+                <td>{{ count }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+<style>
+.table-dark th,
+.table-dark td {
+    padding: 14px 12px ;
+    vertical-align: middle;
+}
+
+/* Dark mode table */
+.table-dark-custom {
+    width: 100%;
+    border-collapse: collapse;
+    background: #1f1f1f;
+    color: #fff;
+}
+
+.table-dark-custom thead {
+    background: #292929;
+    color: #00eaff;
+}
+
+.table-dark-custom th,
+.table-dark-custom td {
+    padding: 14px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.table-dark-custom tbody tr:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+.table-dark-custom tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Make table responsive on mobile */
+.table-responsive {
+    overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+    .table-dark-custom th,
+    .table-dark-custom td {
+        padding: 10px 8px;
+        font-size: 14px;
+    }
+}
+
+</style>
+
+{% endblock %}

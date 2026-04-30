@@ -1,0 +1,213 @@
+{% extends "base.html" %}
+
+{# {% block title %}Welcome - Turf PlayGrounds Booking {% endblock %} #}
+
+{% block content %}
+<div class="hero-section text-center text-white py-5">
+    <div class="container mt-10">
+        <div class="row align-items-center min-vh-75">
+            <div class="col-lg-12">
+                <h1 class="display-3 fw-bold mb-4 animate__animated animate__fadeInUp">
+                    <img src="{{ url_for('static', filename='images/god.jpg') }}" class="img-fluid" alt="Description" style="height: 100px; width: 100px;border-radius: 50%; object-fit: cover;"> Book Your Perfect Turf
+                </h1>
+                <p class="lead mb-4 fs-4">
+                    Find and book premium sports turfs in your area with real-time availability and instant confirmation
+                </p>
+                <div class="d-flex justify-content-center gap-3 flex-wrap">
+                    {% if not current_user.is_authenticated %}
+                        <a href="{{ url_for('signup') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-user-plus me-2"></i>Get Started
+                        </a>
+                        <a href="{{ url_for('login') }}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                        </a>
+                    {% else %}
+                        <a href="{{ url_for('all_bookings') }}" class="btn btn-primary btn-lg">
+                            <i class="fas fa-calendar-check me-2"></i>Book Now
+                        </a>
+                        <a href="{{ url_for('homepage') }}" class="btn btn-outline-light btn-lg">
+                            <i class="fas fa-home me-2"></i>Dashboard
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Features Section -->
+<div class="container-custom">
+    <div class="row">
+        <div class="col-12 text-center mb-5">
+            <h2 class="display-5 fw-bold text-primary">Why Choose Turf PlayGrounds Booking?</h2>
+            <p class="lead" style="color:white;">Experience the best turf booking platform with premium features</p>
+        </div>
+    </div>
+    
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4">
+                <div class="card-body">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-clock fa-3x text-primary"></i>
+                    </div>
+                    <h4 class="card-title">Real-time Availability</h4>
+                    <p class="card-text">Check live availability and book instantly without conflicts</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4">
+                <div class="card-body">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-credit-card fa-3x text-success"></i>
+                    </div>
+                    <h4 class="card-title">Secure Payments</h4>
+                    <p class="card-text">Safe and secure payment processing with Stripe integration</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4">
+                <div class="card-body">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-envelope fa-3x text-info"></i>
+                    </div>
+                    <h4 class="card-title">Email Confirmation</h4>
+                    <p class="card-text">Get instant booking confirmations and reminders via email</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4">
+                <div class="card-body">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-mobile-alt fa-3x text-warning"></i>
+                    </div>
+                    <h4 class="card-title">Mobile Friendly</h4>
+                    <p class="card-text">Fully responsive design that works perfectly on all devices</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4">
+                <div class="card-body">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-calendar-alt fa-3x text-danger"></i>
+                    </div>
+                    <h4 class="card-title">Advance Booking</h4>
+                    <p class="card-text">Book your favorite turfs up to 7 days in advance</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="card h-100 text-center p-4">
+                <div class="card-body">
+                    <div class="feature-icon mb-3">
+                        <i class="fas fa-search fa-3x text-secondary"></i>
+                    </div>
+                    <h4 class="card-title">Smart Search</h4>
+                    <p class="card-text">Find turfs by location, name, or facilities with advanced filters</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- About Section -->
+<div class="container-custom" id="about">
+    <div class="row align-items-center">
+        <div class="col-lg-6">
+            <h2 class="display-6 fw-bold text-primary mb-4">About Turf PlayGrounds Booking</h2>
+            <p class="lead">
+                Turf PlayGrounds Booking is the premier platform for sports enthusiasts to find and book high-quality turfs 
+                for football, cricket, and other sports activities.
+            </p>
+            <p>
+                Our platform connects turf owners with players, providing a seamless booking experience with 
+                real-time availability, secure payments, and instant confirmations. Whether you're organizing 
+                a casual game with friends or a competitive match, we have the perfect turf for you.
+            </p>
+            <ul class="list-unstyled">
+                <li><i class="fas fa-check text-success me-2"></i>100+ Premium Turfs</li>
+                <li><i class="fas fa-check text-success me-2"></i>24/7 Customer Support</li>
+                <li><i class="fas fa-check text-success me-2"></i>Flexible Cancellation</li>
+                <li><i class="fas fa-check text-success me-2"></i>Best Price Guarantee</li>
+            </ul>
+        </div>
+        <div class="col-lg-6">
+         <img src= "{{ url_for('static', filename='images/aboutus.jpeg') }}"  class="img-fluid rounded-3 shadow" alt="Football Turf">     
+        </div>
+    </div>
+</div>
+
+<!-- Call to Action -->
+<div class="container-custom text-center">
+    <div class="row">
+        <div class="col-12">
+            <h2 class="display-6 fw-bold text-primary mb-4">Ready to Play?</h2>
+            <p class="lead mb-4">Join thousands of players who trust Turf PlayGrounds Booking for their sports needs</p>
+            {% if not current_user.is_authenticated %}
+                <a href="{{ url_for('signup') }}" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-user-plus me-2"></i>Create Account
+                </a>
+                <a href="{{ url_for('login') }}" class="btn btn-outline-primary btn-lg">
+                    <i class="fas fa-sign-in-alt me-2"></i>Sign In
+                </a>
+            {% else %}
+                <a href="{{ url_for('all_bookings') }}" class="btn btn-primary btn-lg">
+                    <i class="fas fa-calendar-check me-2"></i>Book Your Turf Now
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<style>
+    .min-vh-75 {
+        min-height: 75vh;
+    }
+    
+    .feature-icon i {
+        transition: transform 0.3s ease;
+    }
+    
+    .card:hover .feature-icon i {
+        transform: scale(1.1);
+    }
+    
+    .hero-section {
+        background:#333333;
+       
+        border-radius: 15px; margin-top: 20px; 
+        padding: 20px;
+        
+
+    }
+    .main-header-logo {
+    height: 40px; 
+    width: auto; 
+    vertical-align: middle; 
+    }
+    
+    .container-custom  p,ul{
+        color:white;
+    }
+    
+    .card-body p{
+        color:white;
+    }
+
+    .container-custom{
+        background: #333333;
+    }
+    .text-muted p{
+        color:white;
+    }
+</style>
+{% endblock %}

@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} flash-message">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div class="container mt-4">
+
+    <h3 class="text-warning mb-4">
+        <i class="fas fa-edit me-2"></i>Edit Slot
+    </h3>
+
+    <div class="card bg-dark border-secondary p-4">
+
+        <form method="POST">
+
+            <div class="mb-3">
+                <label class="form-label text-light">Base Price</label>
+                <input type="number"
+                       name="base_price"
+                       value="{{ slot.base_price }}"
+                       class="form-control"
+                       required>
+            </div>
+
+            <div class="form-check mb-3">
+                <input class="form-check-input"
+                       type="checkbox"
+                       name="is_holiday"
+                       {% if slot.is_holiday %}checked{% endif %}>
+                <label class="form-check-label text-light">
+                    Holiday Slot
+                </label>
+            </div>
+
+            <button class="btn btn-warning">
+                Update Slot
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+
+    setTimeout(() => {
+    const flashes = document.querySelectorAll('.flash-message');
+    flashes.forEach(flash => {
+      flash.style.transition = 'opacity 0.5s ease';
+      flash.style.opacity = '0';
+      setTimeout(() => flash.remove(), 500);
+    });
+  }, 3000); // 3 seconds
+
+</script>
+
+{% endblock %}

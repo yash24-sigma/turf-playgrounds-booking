@@ -1,0 +1,184 @@
+{% extends "admin_layout.html" %}
+{% block content %}
+
+<h2 class="mb-4">Manage Turfs</h2>
+
+<form method="GET" action="/admin/turfs" class="mb-4 d-flex gap-3 align-items-center">
+
+    <input type="text" name="name" placeholder="Search Turf Name"
+           value="{{ request.args.get('name', '') }}"
+           class="form-control" style="max-width:250px;">
+
+    <input type="text" name="location" placeholder="Search Location"
+           value="{{ request.args.get('location', '') }}"
+           class="form-control" style="max-width:250px;">
+
+    <button type="submit" class="btn btn-primary">Search</button>
+
+    <select name="sort" class="form-select" style="max-width:220px;">
+        <option value="">Sort By</option>
+
+        <option value="newest"
+            {% if sort == "newest" %}selected{% endif %}>
+            Newest First
+        </option>
+
+        <option value="oldest"
+            {% if sort == "oldest" %}selected{% endif %}>
+            Oldest First
+        </option>
+
+        <option value="price_high"
+            {% if sort == "price_high" %}selected{% endif %}>
+            Price: High → Low
+        </option>
+
+        <option value="price_low"
+            {% if sort == "price_low" %}selected{% endif %}>
+            Price: Low → High
+        </option>
+
+        <option value="rating_high"
+            {% if sort == "rating_high" %}selected{% endif %}>
+            Rating: High → Low
+        </option>
+    </select>
+
+
+    <button type="submit" class="btn btn-primary">Apply</button>
+
+    {% if request.args %}
+        <a href="{{ url_for('admin_turfs') }}" class="btn btn-secondary">Reset</a>
+    {% endif %}
+
+</form>
+
+
+<div class="card-custom shadow mb-3">
+    <p class="mb-0">Total Turfs: <strong>{{ turfs|length }}</strong></p>
+</div>
+
+<table class="table-dark-custom">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Turf Name</th>
+            <th>Owner Name</th>
+            <th>Owner ID</th>
+            <th>Location</th>
+            <th>Price/hr</th>
+            <th>Created</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for turf in turfs %}
+        <tr>
+            <td>{{ turf.id }}</td>
+            <td>{{ turf.name }}</td>
+            <td>{{ turf.owner_name }}</td>
+            <td>{{ turf.owner_id }}</td>
+            <td>{{ turf.location }}</td>
+            <td>₹{{ turf.price_per_hour }}</td>
+            <td>
+                {% if turf.created_at != "-" %}
+                    <span class="badge bg-warning text-dark">{{ turf.created_at }}</span>
+                    <br>
+                    <small class="text-muted">{{ turf.time_ago }}</small>
+                {% else %}
+                    -
+                {% endif %}
+
+            </td>
+
+            <td  class="action-buttons">
+                <a href="{{ url_for('turf_details', turf_id=turf.id) }}"
+                   class="btn btn-sm btn-success">
+                    View
+                </a>
+
+                <a href="{{ url_for('admin_delete_turf', turf_id=turf.id) }}"
+                   class="btn btn-sm btn-danger"
+                   onclick="return confirm('Delete this turf permanently?');">
+                    Delete
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<style>
+/* Dark mode table */
+.table-dark-custom {
+    width: 100%;
+    border-collapse: collapse;
+    background: #1f1f1f;
+    color: #fff;
+}
+
+.table-dark-custom thead {
+    background: #292929;
+    color: #00eaff;
+}
+
+.table-dark-custom th,
+.table-dark-custom td {
+    padding: 14px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.table-dark-custom tbody tr:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+.table-dark-custom tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Make table responsive on mobile */
+.table-responsive {
+    overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+    .table-dark-custom th,
+    .table-dark-custom td {
+        padding: 10px 8px;
+        font-size: 14px;
+    }
+}
+
+.badge {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    border-radius: 5px;
+}
+
+.text-muted {
+    opacity: 0.75;
+}
+
+
+.action-buttons {
+    display: flex;
+    align-items: center;
+    gap: 8px;            
+    justify-content: center; 
+}
+
+
+.table-dark-custom td,
+.table-dark-custom th {
+    vertical-align: middle;
+    text-align: center;
+}
+
+.action-buttons .btn {
+    min-width: 60px;     
+    text-align: center;
+}
+
+</style>
+
+{% endblock %}

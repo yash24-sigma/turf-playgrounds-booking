@@ -1,0 +1,120 @@
+{% extends "admin_layout.html" %}
+{% block content %}
+
+<h2 class="mb-4">Manage Reviews</h2>
+
+<div class="card-custom shadow mb-3">
+    <p class="mb-0">Total Reviews: <strong>{{ reviews|length }}</strong></p>
+</div>
+
+<div class="table-responsive">
+<table class="table-dark-custom">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>User</th>
+            <th>Turf</th>
+            <th>Rating</th>
+            <th>Comment</th>
+            <th>Created</th>
+            <th>Action</th>
+        </tr>
+    </thead>
+
+    <tbody>
+        {% for r in reviews %}
+        <tr>
+            <td>{{ r.id }}</td>
+
+           
+            <td>{{ r.username }}</td>
+
+            
+            <td>{{ r.turf }}</td>
+
+            <td>{{ r.rating }}</td>
+
+            <td style="max-width:260px;">{{ r.comment }}</td>
+
+            <td>
+                {% if r.created_at %}
+                    <span class="badge bg-primary">
+                        {{ r.created_at.strftime('%d %b %Y') }}
+                    </span>
+                    <br>
+                    <small class="text-muted">{{ r.time_ago }}</small>
+                {% else %}
+                    –
+                {% endif %}
+            </td>
+
+            <td>
+                <a href="/admin/reviews/delete/{{ r.id }}"
+                   class="btn btn-sm btn-danger"
+                   onclick="return confirm('Delete this review?');">
+                    Delete
+                </a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+</div>
+
+
+
+
+<style>
+/* Dark mode table */
+.table-dark-custom {
+    width: 100%;
+    border-collapse: collapse;
+    background: #1f1f1f;
+    color: #fff;
+}
+
+.table-dark-custom thead {
+    background: #292929;
+    color: #00eaff;
+}
+
+.table-dark-custom th,
+.table-dark-custom td {
+    padding: 14px 12px;
+    border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+
+.table-dark-custom tbody tr:hover {
+    background: rgba(255,255,255,0.05);
+}
+
+.table-dark-custom tbody tr:last-child td {
+    border-bottom: none;
+}
+
+/* Mobile responsive */
+.table-responsive {
+    overflow-x: auto;
+}
+
+@media (max-width: 768px) {
+    .table-dark-custom th,
+    .table-dark-custom td {
+        padding: 10px 8px;
+        font-size: 14px;
+        white-space: nowrap;
+    }
+}
+
+.badge {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    border-radius: 5px;
+}
+
+.text-muted {
+    opacity: 0.75;
+}
+</style>
+
+{% endblock %}

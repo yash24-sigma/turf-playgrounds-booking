@@ -1,0 +1,439 @@
+{% extends "base.html" %}
+
+{# {% block title %}Booking Confirmed - Turf PlayGrounds Booking{% endblock %} #}
+
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} flash-message">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<div class="container-custom" style="background-color: #333333;">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <!-- Success Header -->
+            <div class="success-header text-center mb-5">
+                <div class="success-icon mb-4">
+                    <i class="fas fa-check-circle fa-6x text-success"></i>
+                </div>
+                <h1 class="fw-bold text-success mb-3">Booking Confirmed!</h1>
+                <p class="lead " style="color: white;">Your turf booking has been successfully confirmed</p>
+                <div class="alert alert-info d-flex align-items-center justify-content-between" role="alert" id="redirect-alert">
+                <div>
+                    <i class="fas fa-info-circle me-2"></i>You will be redirected to your dashboard in <span id="countdown-seconds">7</span> seconds.
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-info" onclick="cancelRedirect()">Cancel</button>
+                </div>
+                <div class="confirmation-number p-3 rounded-3 d-inline-block" 
+                     style="background: linear-gradient(135deg, #d4edda, #c3e6cb);">
+                    <h5 class="fw-bold text-success mb-0">
+                        Confirmation #{{ booking.id }}
+                    </h5>
+                </div>
+            </div>
+            
+            <!-- Booking Details Card -->
+            <div class="card booking-details-card mb-4">
+                <div class="card-header bg-success text-white">
+                    <h5 class="fw-bold mb-0">
+                        <i class="fas fa-calendar-check me-2"></i>Booking Details
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <!-- Turf Information -->
+                        <div class="col-md-6">
+                            <div class="booking-info-section mb-4">
+                                <h6 class="fw-bold text-primary mb-3">
+                                    <i class="fas fa-futbol me-2"></i>Turf Information
+                                </h6>
+                                <div class="info-item d-flex align-items-start mb-2">
+                                    <i class="fas fa-map-marker-alt  me-3 mt-1"></i>
+                                    <div>
+                                        <strong>{{ booking.turf.name }}</strong>
+                                        <br>
+                                        <small style="color: white;">{{ booking.turf.location }}</small>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Customer Information -->
+                            <div class="booking-info-section mb-4">
+                                <h6 class="fw-bold text-primary mb-3">
+                                    <i class="fas fa-user me-2"></i>Customer Information
+                                </h6>
+                                <div class="info-item d-flex align-items-center mb-2" style="color: white;">
+                                    <i class="fas fa-user  me-3"></i>
+                                    <span>{{ current_user.username }}</span>
+                                </div>
+                                <div class="info-item d-flex align-items-center mb-2" style="color: white;">
+                                    <i class="fas fa-envelope  me-3"></i>
+                                    <span>{{ current_user.email }}</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Booking Schedule -->
+                        <div class="col-md-6">
+                            <div class="booking-info-section mb-4">
+                                <h6 class="fw-bold text-primary mb-3">
+                                    <i class="fas fa-clock me-2"></i>Schedule Details
+                                </h6>
+                                <div class="schedule-grid">
+                                    <div class="schedule-item text-center p-3 mb-3 rounded-3" 
+                                         style="background: linear-gradient(135deg, #e3f2fd, #f0f7ff);">
+                                        <i class="fas fa-calendar-day fa-2x text-primary mb-2"></i>
+                                        <h6 class="fw-bold" style="color: #2b2b2b;">Date</h6>
+                                        <p class="mb-0" style="color: #2b2b2b;">{{ booking.booking_date.strftime('%A, %B %d, %Y') }}</p>
+                                    </div>
+                                    
+                                    <div class="schedule-item text-center p-3 mb-3 rounded-3" 
+                                         style="background: linear-gradient(135deg, #e8f5e8, #f0f8f0);">
+                                        <i class="fas fa-clock fa-2x text-success mb-2"></i>
+                                        <h6 class="fw-bold" style="color: #2b2b2b;">Time</h6>
+                                        <p class="mb-0" style="color: #2b2b2b;">{{ booking.start_time.strftime('%I:%M %p') }} - {{ booking.end_time.strftime('%I:%M %p') }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Payment Information -->
+                            <div class="booking-info-section">
+                                <h6 class="fw-bold text-primary mb-3">
+                                    <i class="fas fa-credit-card me-2"></i>Payment Information
+                                </h6>
+                                <div class="info-item d-flex justify-content-between mb-2">
+                                    <span>Amount Paid:</span>
+                                    <span class="fw-bold text-success">₹{{ "%.0f"|format(booking.total_amount) }}</span>
+                                </div>
+                                <div class="info-item d-flex justify-content-between mb-2">
+                                    <span>Payment Status:</span>
+                                    <span class="badge bg-success">{{ booking.payment_status.title() }}</span>
+                                </div>
+                                <div class="info-item d-flex justify-content-between">
+                                    <span>Payment Method:</span>
+                                    <span>Card Payment</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Next Steps -->
+            <div class="card next-steps-card mb-4">
+                <div class="card-header bg-info text-white">
+                    <h5 class="fw-bold mb-0">
+                        <i class="fas fa-list-check me-2"></i>What's Next?
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="next-step-item d-flex align-items-start mb-3">
+                                <div class="step-number me-3">
+                                    <span class="badge bg-primary rounded-pill">1</span>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold">Email Confirmation Sent</h6>
+                                    <p class=" small mb-0" style="color: white;">
+                                        A confirmation email with all details has been sent to your email address.
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="next-step-item d-flex align-items-start mb-3">
+                                <div class="step-number me-3">
+                                    <span class="badge bg-primary rounded-pill">2</span>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold">Arrive 15 Minutes Early</h6>
+                                    <p class=" small mb-0" style="color: white;">
+                                        Please arrive at the turf 15 minutes before your scheduled time.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="next-step-item d-flex align-items-start mb-3">
+                                <div class="step-number me-3">
+                                    <span class="badge bg-primary rounded-pill">3</span>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold">Bring Valid ID</h6>
+                                    <p class=" small mb-0" style="color: white;">
+                                        Please bring a valid government-issued photo ID for verification.
+                                    </p>
+                                </div>
+                            </div>
+                            
+                            <div class="next-step-item d-flex align-items-start">
+                                <div class="step-number me-3">
+                                    <span class="badge bg-primary rounded-pill">4</span>
+                                </div>
+                                <div>
+                                    <h6 class="fw-bold">Enjoy Your Game</h6>
+                                    <p class=" small mb-0" style="color: white;">
+                                        Have a great time playing at our premium turf facility!
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Action Buttons -->
+            <div class="action-buttons text-center mb-4">
+                <div class="d-flex flex-wrap justify-content-center gap-3">
+                    <a href="{{ url_for('order_history') }}" class="btn btn-primary">
+                        <i class="fas fa-history me-2"></i>View All Bookings
+                    </a>
+                    <a href="{{ url_for('all_bookings') }}" class="btn btn-outline-primary">
+                        <i class="fas fa-plus me-2"></i>Book Another Turf
+                    </a>
+                    <button onclick="downloadReceipt()" class="btn btn-outline-secondary" style="color: white;">
+                        <i class="fas fa-download me-2"></i>Download Receipt
+                    </button>
+                   
+                </div>
+            </div>
+            
+            <!-- Important Information -->
+            <div class="card important-info-card">
+                <div class="card-header bg-warning text-dark">
+                    <h6 class="fw-bold mb-0">
+                        <i class="fas fa-exclamation-triangle me-2"></i>Important Information
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-danger">
+                                <i class="fas fa-ban me-2"></i>Cancellation Policy
+                            </h6>
+                            <ul class="small " style="color: white;">
+                                <li>Free cancellation up to 24 hours before booking</li>
+                                <li>50% refund for cancellations 12-24 hours before</li>
+                                <li>No refund for cancellations within 12 hours</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <h6 class="fw-bold text-info">
+                                <i class="fas fa-info-circle me-2"></i>Facility Rules
+                            </h6>
+                            <ul class="small " style="color: white;">
+                                <li>No smoking or alcohol allowed on premises</li>
+                                <li>Maximum 22 players allowed per booking</li>
+                                <li>Proper sports attire required</li>
+                                <li>Follow all safety guidelines</li>
+                            </ul>
+                        </div>
+                    </div>
+                    
+                    <div class="mt-3 p-3 rounded-3" style="background: #f8f9fa;">
+                        <div class="d-flex align-items-center">
+                            <i class="fas fa-phone fa-2x text-primary me-3"></i>
+                            <div>
+                                <h6 class="fw-bold mb-1" style="color: #2b2b2b;" >Need Help?</h6>
+                                <p class=" mb-0" style="color: #2b2b2b;">
+                                    Contact our customer support: 
+                                    <a href="tel:+911234567890" class="text-primary">+91 12345 67890</a> | 
+                                    <a href="mailto:support@turfbooking.com" class="text-primary">support@turfplaygroundsbooking.com</a>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .success-header {
+        animation: fadeInUp 0.8s ease-out;
+    }
+    
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+    
+    .booking-details-card, 
+    .next-steps-card, 
+    .important-info-card {
+        border: none;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+        margin-bottom: 2rem;
+    }
+    
+    .schedule-item {
+        transition: transform 0.3s ease;
+    }
+    
+    .schedule-item:hover {
+        transform: translateY(-2px);
+    }
+    
+    .next-step-item {
+        transition: all 0.3s ease;
+        padding: 10px;
+        border-radius: 8px;
+    }
+    
+    .next-step-item:hover {
+        background: rgba(102, 126, 234, 0.05);
+    }
+    
+    .step-number .badge {
+        width: 30px;
+        height: 30px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .action-buttons .btn {
+        transition: all 0.3s ease;
+    }
+    
+    .action-buttons .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+    
+    .confirmation-number {
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0.7); }
+        70% { box-shadow: 0 0 0 10px rgba(40, 167, 69, 0); }
+        100% { box-shadow: 0 0 0 0 rgba(40, 167, 69, 0); }
+    }
+    
+    .info-item {
+        padding: 8px 0;
+        border-bottom: 1px solid #f0f0f0;
+    }
+    
+    .info-item:last-child {
+        border-bottom: none;
+    }
+</style>
+
+<script>
+    // Download receipt functionality
+    function downloadReceipt() {
+        const bookingDetails = {
+            confirmationNumber: '{{ booking.id }}',
+            turfName: '{{ booking.turf.name }}',
+            location: '{{ booking.turf.location }}',
+            date: '{{ booking.booking_date.strftime("%A, %B %d, %Y") }}',
+            time: '{{ booking.start_time.strftime("%I:%M %p") }} - {{ booking.end_time.strftime("%I:%M %p") }}',
+            amount: '₹{{ "%.0f"|format(booking.total_amount) }}',
+            customerName: '{{ current_user.username }}',
+            customerEmail: '{{ current_user.email }}'
+        };
+        
+        // Create a simple receipt text
+        const receiptText = `
+            TURF BOOKING RECEIPT
+            ====================
+
+            Confirmation Number: ${bookingDetails.confirmationNumber}
+            Customer: ${bookingDetails.customerName}
+            Email: ${bookingDetails.customerEmail}
+
+            BOOKING DETAILS:
+            Turf: ${bookingDetails.turfName}
+            Location: ${bookingDetails.location}
+            Date: ${bookingDetails.date}
+            Time: ${bookingDetails.time}
+
+            PAYMENT:
+            Total Amount: ₹{bookingDetails.amount}
+            Status: Paid
+
+            Thank you for choosing Turf PlayGrounds Booking!
+        `;
+        
+        // Create and download the file
+        const blob = new Blob([receiptText], { type: 'text/plain' });
+        const url = window.URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `TurfBooking_Receipt_${bookingDetails.confirmationNumber}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    }
+    
+   
+    
+    // Auto-redirect to dashboard after 30 seconds 
+    let redirectTimer; 
+    let countdownSeconds = 7;
+    
+    // Function to stop the timer
+    function cancelRedirect() {
+        // Clear the timer
+        clearTimeout(redirectTimer); 
+        
+        // Remove the alert box from the DOM
+        const alertElement = document.getElementById('redirect-alert');
+        if (alertElement) {
+            alertElement.remove(); 
+        }
+        console.log("Redirection cancelled by user.");
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const countdownElement = document.getElementById('countdown-seconds');
+        
+        function updateCountdown() {
+            if (countdownSeconds >= 0) {
+                if (countdownElement) {
+                    countdownElement.textContent = countdownSeconds;
+                }
+                countdownSeconds--;
+            }
+            
+            if (countdownSeconds < 0) {
+                // Execute redirection
+                window.location.href = "{{ url_for('order_history') }}";
+                clearInterval(redirectTimer); // Clear interval when redirecting
+            }
+        }
+        
+        // Start the countdown and save the timer ID
+        
+        redirectTimer = setInterval(updateCountdown, 1000); 
+    });
+
+setTimeout(() => {
+    const flashes = document.querySelectorAll('.flash-message');
+    flashes.forEach(flash => {
+      flash.style.transition = 'opacity 0.5s ease';
+      flash.style.opacity = '0';
+      setTimeout(() => flash.remove(), 500);
+    });
+  }, 3000); // 3 seconds
+  
+</script>
+{% endblock %}

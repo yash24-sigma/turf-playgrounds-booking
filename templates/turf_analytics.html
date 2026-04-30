@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Analytics - {{ turf.name }}{% endblock %}
+
+{% block content %}
+<div class="container-fluid mt-5">
+    <div class="row justify-content-center">
+        <div class="col-lg-10 col-md-12">
+            
+            <div class="mb-4 text-center">
+                <h1 class="text-primary fw-bold">
+                    <i class="fas fa-chart-line me-3"></i>Analytics: {{ turf.name }}
+                </h1>
+                <p class="lead text-muted">Detailed performance overview of your turf.</p>
+            </div>
+            
+            <div class="row g-4 mb-5">
+                
+                <div class="col-md-3">
+                    <div class="card p-3 bg-dark-card border-secondary text-center">
+                        <h4 class="text-warning mb-1">₹{{ "{:.0f}".format(total_revenue) }}</h4>
+                        <small class="text-muted">Net Revenue</small>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="card p-3 bg-dark-card border-secondary text-center">
+                        <h4 class="text-success mb-1">{{ total_bookings }}</h4>
+                        <small class="text-muted">Total Slots Booked</small>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="card p-3 bg-dark-card border-secondary text-center">
+                        <h4 class="text-info mb-1">{{ avg_rating }}</h4>
+                        <small class="text-muted">Customer Rating</small>
+                    </div>
+                </div>
+                
+                <div class="col-md-3">
+                    <div class="card p-3 bg-dark-card border-secondary text-center">
+                        <h4 class="text-light mb-1">{{ utilization_rate }}%</h4>
+                        <small class="text-muted">Utilization Rate</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card p-4 bg-dark-card border-secondary mb-5">
+                <h4 class="text-white mb-4">Booking Trends</h4>
+                <div class="chart-container-wrapper">
+                    <canvas id="bookingTrendChart" style="height: 350px;"></canvas>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>
+
+<style>
+    .chart-container-wrapper {
+    
+    width: 100%; 
+  
+    height: 350px; 
+   
+    position: relative; 
+}
+</style>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // 1. Retrieve the data passed from Flask
+        const chartData =JSON.parse('{{ chart_data | tojson }}');
+        
+        // 2. Get the Chart Canvas element
+        const ctx = document.getElementById('bookingTrendChart').getContext('2d');
+
+        // 3. Create the Chart
+        const bookingChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: chartData.labels,
+                datasets: [{
+                    label: 'Bookings per Day',
+                    data: chartData.counts,
+                    backgroundColor: 'rgba(40, 167, 69, 0.5)', // Green shade
+                    borderColor: '#28a745',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.3
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: { color: 'white' }
+                    },
+                    x: {
+                        ticks: { color: 'white' }
+                    }
+                }
+            }
+        });
+    });
+
+</script>
+
+{% endblock %}

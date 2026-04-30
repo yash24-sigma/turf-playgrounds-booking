@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block title %}Edit {{ turf.name }}{% endblock %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} flash-message">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card p-4 bg-dark-card border-secondary">
+                <h3 class="text-primary mb-4">Editing: {{ turf.name }}</h3>
+                <p>Update your turf details and pricing below.</p>
+                
+                <form method="POST" action="{{ url_for('edit_turf', turf_id=turf.id) }}" enctype="multipart/form-data">
+                    
+                    <div class="mb-3">
+                        <label for="turf_name" class="form-label text-light">Turf Name</label>
+                        <input type="text" class="form-control" id="turf_name" name="turf_name" 
+                               value="{{ turf.name }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="price" class="form-label text-light">Price Per Hour (₹)</label>
+                        <input type="number" step="any" class="form-control" id="price" name="price" 
+                               value="{{ turf.price_per_hour }}" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Turf Image</label>
+
+                        <div class="row align-items-center">
+
+                            <!-- Current Image -->
+                            <div class="col-md-4 text-center">
+                                <p class=" mb-1">Current Image</p>
+                                <img src="{{ turf.image_url }}" 
+                                    class="img-thumbnail shadow-sm"
+                                    style="width: 180px; height: 120px; object-fit: cover; border-radius: 6px;">
+                            </div>
+
+                            <!-- Upload New Image -->
+                            <div class="col-md-8">
+                                <p class=" mb-1">Upload New Image</p>
+                                <input type="file" 
+                                    name="image" 
+                                    id="image" 
+                                    class="form-control mb-2" 
+                                    style="max-width: 320px;"
+                                    accept="image/*">
+
+                                <small class="text-info"> Select a high-quality JPG / PNG / WEBP image.</small>
+                            </div>
+
+                        </div>
+                    </div>
+
+                    
+                    <button type="submit" class="btn btn-success mt-4"><i class="fas fa-save me-2"></i>Save Changes</button>
+                    <a href="{{ url_for('owner_dashboard') }}" class="btn btn-secondary mt-4 ms-2">Back to Dashboard</a>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+
+    setTimeout(() => {
+    const flashes = document.querySelectorAll('.flash-message');
+    flashes.forEach(flash => {
+      flash.style.transition = 'opacity 0.5s ease';
+      flash.style.opacity = '0';
+      setTimeout(() => flash.remove(), 500);
+    });
+  }, 3000); // 3 seconds
+
+</script>
+
+{% endblock %}

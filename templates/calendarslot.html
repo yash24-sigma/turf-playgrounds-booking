@@ -1,0 +1,116 @@
+<div class="col-lg-8 col-md-10 col-12 mx-auto">
+            
+            {% if available_slots %}
+                <div class="slots-container" id="slots-container" data-turf-id="{{ turf.id }}" >
+
+                    {% set ns = namespace(current_date=None) %}
+
+                    {% for slot in available_slots %}
+
+                        {% if slot.date != ns.current_date %}
+                            {% set ns.current_date = slot.date %}
+
+                            <div class="row g-3 mt-4">
+                                <div class="col-12">
+                                    <h5 class="fw-bold text-secondary mb-3">
+                                        <i class="fas fa-calendar-day me-2"></i>
+                                        {{slot.date.strftime('%A, %B %d, %Y') }}
+
+                                        {% if slot.date == today %}
+                                            <span class="badge bg-primary ms-2">Today</span>
+                                        {% elif slot.date == tomorrow %}
+                                            <span class="badge bg-secondary ms-2">Tomorrow</span>
+                                        {% endif %}
+                                    </h5>
+                                </div>
+                            </div>
+                        {% endif %}
+
+                        <div class="card time-slot-card h-100 p-2 mb-2 d-flex flex-row justify-content-between align-items-center">
+
+                            <!-- LEFT SIDE (Time) -->
+                            <div class="time-info mb-2">
+                                <h6 class="fw-bold text-primary">
+                                    {{ slot.start_time.strftime('%I:%M %p') }} -
+                                    {{ slot.end_time.strftime('%I:%M %p') }}
+                                </h6>
+
+                                {% if slot.is_weekend %}
+                                    <span class="badge bg-info"> 🔥 Weekend Pricing</span>
+                                {% endif %}
+
+                                {% if slot.is_holiday %}
+                                    <span class="badge bg-danger"> 🎉 Holiday Special</span>
+                                {% endif %}
+                            </div>
+
+
+                            <!-- RIGHT SIDE -->
+                            <div class="d-flex flex-column align-items-end">
+
+                                <!-- PRICE -->
+                                <div class="price-info mb-2">
+                                    <h6 class="text-success fw-bold">
+                                        ₹{{ "%.0f"|format(slot.price) }}
+                                    </h6>
+
+                                    {% if  slot.get('base_price') and slot.price > slot.base_price %}
+                                        <small class="text-muted">
+                                            Base ₹{{ "%.0f"|format(slot.base_price) }}
+                                        </small>
+                                    {% endif %}
+                                </div>
+
+
+                                <!-- LAST SLOT WARNING -->
+                                {% if slot.is_last_slot and not slot.is_booked %}
+                                    <span class="badge bg-warning text-dark mb-2">
+                                        <i class="fas fa-exclamation-triangle me-1"></i>
+                                        Only 1 slot left
+                                    </span>
+                                {% endif %}
+
+
+                                <!-- STATUS -->
+                                {% if slot.is_booked %}
+                                    <span class="badge bg-danger mb-2">
+                                        <i class="fas fa-times-circle me-1"></i> Booked
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-success mb-2">
+                                        <i class="fas fa-check-circle me-1"></i> Available
+                                    </span>
+                                {% endif %}
+
+
+                                <!-- BOOK BUTTON -->
+                                {% if not slot.is_booked %}
+                                    <a href="{{ url_for('book_turf',
+                                        turf_id=turf.id,
+                                        date=slot.date,
+                                        start_time=slot.start_time.strftime('%H:%M'),
+                                        end_time=slot.end_time.strftime('%H:%M')) }}"
+                                        class="btn btn-primary btn-sm">
+                                        <i class="fas fa-calendar-plus me-1"></i>
+                                        Book Slot
+                                    </a>
+                                {% endif %}
+
+                            </div>
+                        </div>
+
+
+                    {% endfor %}
+                    
+                </div> {% else %}
+                <div class="no-slots text-center py-5">
+                    <i class="fas fa-calendar-times fa-5x text-muted mb-4"></i>
+                    <h4 class="text-muted">No Available Slots</h4>
+                    <p class="lead text-muted">This turf is fully booked for the next 7 days. Please check back later.</p>
+                    <a href="{{ url_for('all_bookings') }}" class="btn btn-primary">
+                        <i class="fas fa-search me-2"></i>Find Other Turfs
+                    </a>
+                </div>
+            {% endif %}
+            
+        </div> 

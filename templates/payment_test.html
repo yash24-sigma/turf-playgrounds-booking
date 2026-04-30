@@ -1,0 +1,354 @@
+{% extends "base.html" %}
+
+{# {% block title %}Complete Payment - Turf PlayGrounds Booking{% endblock %} #}
+
+{% block content %}
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    {% for category, message in messages %}
+      <div class="alert alert-{{ category }} flash-message">
+        {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+
+<div class="container-custom" style="background-color: #333333;">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="payment-container">
+                <div class="text-center mb-4">
+                    <i class="fas fa-credit-card fa-4x text-primary mb-3"></i>
+                    <h2 class="fw-bold text-primary">Secure Payment</h2>
+                    <p style="color: white;">Complete your booking with a secure payment</p>
+                </div>
+                
+                <!-- Payment Form -->
+                <div class="card payment-card">
+                    <div class="card-body p-4">
+                        <div class="payment-method-selector mb-4">
+                            <h5 class="fw-bold mb-3">
+                                <i class="fas fa-payment me-2"></i>Payment Method
+                            </h5>
+                            
+                            <div class="payment-tabs">
+                                <div class="btn-group w-100" role="group">
+                                    <input type="radio" class="btn-check" name="paymentMethod" 
+                                           id="cardPayment" value="card" checked>
+                                    <label class="btn btn-outline-primary" for="cardPayment">
+                                        <i class="fas fa-credit-card me-2"></i>Credit/Debit Card
+                                    </label>
+                                    
+                                    <input type="radio" class="btn-check" name="paymentMethod" 
+                                           id="upiPayment" value="upi">
+                                    <label class="btn btn-outline-secondary" for="upiPayment">
+                                        <i class="fas fa-mobile-alt me-2"></i>UPI Payment
+                                        <small class="d-block">Coming Soon</small>
+                                    </label>
+                                    
+                                    <input type="radio" class="btn-check" name="paymentMethod" 
+                                           id="walletPayment" value="wallet" disabled>
+                                    <label class="btn btn-outline-secondary" for="walletPayment">
+                                        <i class="fas fa-wallet me-2"></i>Wallet
+                                        <small class="d-block">Coming Soon</small>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                       
+                            <div id="card-element" class="form-control"></div>
+                            <div id="card-errors" class="text-danger mt-2"></div>
+
+                            <div class="mb-3">
+                                <label for="cardholder-name" class="form-label">Cardholder Name</label>
+                                <input type="text" class="form-control" id="cardholder-name" 
+                                       placeholder="Enter name as on card" value="{{ current_user.username }}" required>
+                            </div>
+                            
+                            <!-- Error display -->
+                            <div id="card-errors" role="alert" class="text-danger mb-3"></div>
+                        </div>
+                        
+                        <!-- Security Info -->
+                        <div class="security-info-box p-3 mb-4" 
+                             style="background: linear-gradient(135deg, #e8f5e8, #f0f8f0); border-radius: 10px;">
+                            <div class="d-flex align-items-center">
+                                <i class="fas fa-shield-alt fa-2x text-success me-3"></i>
+                                <div>
+                                    <h6 class="fw-bold text-success mb-1">Your payment is secured by</h6>
+                                    <div class="d-flex align-items-center">
+                                        <strong class="text-primary me-3">STRIPE</strong>
+                                        <i class="fas fa-lock me-1 text-success"></i>
+                                        <small class="text-success">256-bit SSL encryption</small>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Payment Button -->
+                        <button id="submit-button"   data-booking-id="{{ booking.id }}" data-amount="{{ booking.total_amount|int  }}"type="button" class="btn btn-success btn-lg w-100 mb-3">
+                            <span id="button-text">
+                                <i class="fas fa-lock me-2"></i>Complete Secure Payment
+                            </span>
+                            <div id="spinner" class="spinner-border spinner-border-sm d-none" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                        </button>
+                        
+                        <div class="text-center">
+                            <small style="color: white;">
+                                By completing this payment, you agree to our terms and conditions
+                            </small>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Trust Indicators -->
+                <div class="trust-indicators mt-4">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="trust-item p-3">
+                                <i class="fas fa-shield-alt fa-2x text-success mb-2"></i>
+                                <h6 class="fw-bold">Secure</h6>
+                                <small style="color: white;">SSL Protected</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="trust-item p-3">
+                                <i class="fas fa-undo fa-2x text-info mb-2"></i>
+                                <h6 class="fw-bold">Refundable</h6>
+                                <small style="color: white;">24hr Cancellation</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="trust-item p-3">
+                                <i class="fas fa-headset fa-2x text-primary mb-2"></i>
+                                <h6 class="fw-bold">Support</h6>
+                                <small style="color: white;">24/7 Available</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        
+        <!-- Order Summary Sidebar -->
+        <div class="col-12 d-flex justify-content-center">
+            <div class="order-summary-wrapper">
+                <div class="order-summary-card card">
+                    <div class="card-header bg-primary text-white">
+                        <h6 class="fw-bold mb-0">
+                            <i class="fas fa-receipt me-2"></i>Order Summary
+                        </h6>
+                    </div>
+
+                    <div class="card-body">
+                        <div class="booking-summary mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-white">Booking ID:</span>
+                            <span class="fw-bold text-white">#{{ booking.id }}</span>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <span class="text-white">Payment Status:</span>
+                            <span class="badge bg-warning">Pending</span>
+                        </div>
+                    </div>
+
+                    <hr>
+
+                     <div class="customer-info mb-3">
+                            <h6 class="fw-bold text-white mb-2">Customer Details</h6>
+                            <p class="small mb-1 text-white">
+                                <i class="fas fa-user me-1"></i>{{ current_user.username }}
+                            </p>
+                            <p class="small mb-0 text-white">
+                                <i class="fas fa-envelope me-1"></i>{{ current_user.email }}
+                            </p>
+                    </div>
+
+                    <div class="help-section pt-3 border-top">
+                        <p class="small text-white mb-2">Need help with payment?</p>
+                        <div class="d-grid">
+                            <a href="javascript:void(0)" class="btn btn-outline-primary btn-sm" onclick="openSupportModal()">
+                                <i class="fas fa-phone me-1"></i>Contact Support
+                            </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </div>
+</div>
+
+<!-- Support Modal -->
+<div id="supportModal" class="custom-modal-overlay">
+  <div class="custom-modal">
+    <div class="modal-header">
+      <h5><i class="fas fa-headset me-2"></i>Contact Support</h5>
+      <button class="close-btn" onclick="closeSupportModal()">×</button>
+    </div>
+
+    <div class="modal-body text-center">
+      <p class="text-muted mb-3">
+        Our support team is available 24/7
+      </p>
+        <div class="support-actions mt-3">
+            <a href="https://wa.me/919930689823?text=Hi%20I%20need%20help%20with%20turf%20booking" target="_blank"  class="btn btn-success  w-100 mb-2">
+                <i class="fab fa-whatsapp me-2"></i> WhatsApp Us
+             </a>
+
+            <a href="https://mail.google.com/mail/?view=cm&fs=1&to=teamturfplaygroundsbooking@gmail.com&su=Turf%20Enquiry"  target="_blank" class="btn btn-success w-100 text-center mb-3">
+                <i class="fas fa-envelope me-2"></i>Send Email 
+            </a>
+        </div>
+    </div>
+  </div>
+</div>
+
+<style>
+    .payment-card {
+        border: none;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+    
+    .payment-tabs .btn {
+        flex: 1;
+        padding: 12px 16px;
+    }
+    
+    .trust-item {
+        transition: transform 0.3s ease;
+    }
+    
+    .trust-item:hover {
+        transform: translateY(-3px);
+    }
+    
+    .order-summary-card {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        width: 100%;
+        max-width: 420px;
+    }
+    
+    @media (max-width: 992px) {
+        .order-summary-card {
+            position: static !important;
+            margin-top: 2rem;
+        }
+    }
+
+    .custom-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 99999; /* VERY IMPORTANT */
+}
+
+</style>
+
+<script src="https://js.stripe.com/v3/"></script>
+
+<script>
+const paymentLog = (msg) => console.log("[Payment]", msg);
+paymentLog("Stripe payment script loaded");
+
+const stripe = Stripe( "pk_test_51RxU4f4XZ7d53ETuWSPMdxGdkpzbIO1EluWJEKcrikvwacHblcIgmtWn45QQSWf0DDNL0zgzs0Z7GkQbgG0ddYS900085XdRaJ");
+const elements = stripe.elements();
+
+const card = elements.create("card", { hidePostalCode: true });
+card.mount("#card-element");
+
+const submitButton = document.getElementById("submit-button");
+const errorElement = document.getElementById("card-errors");
+
+
+const bookingId = submitButton.dataset.bookingId;
+const amount = parseInt(submitButton.dataset.amount, 10);
+
+submitButton.addEventListener("click", async () => {
+    submitButton.disabled = true;
+    errorElement.textContent = "";
+
+    try {
+        paymentLog("Creating PaymentIntent");
+
+        const res = await fetch("/create_payment_intent", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+                booking_id: bookingId,
+                amount: amount
+            })
+        });
+
+        const data = await res.json();
+        if (!data.client_secret) {
+            throw new Error("PaymentIntent creation failed");
+        }
+
+        paymentLog("Confirming card payment");
+
+        const result = await stripe.confirmCardPayment(
+            data.client_secret,
+            {
+                payment_method: {
+                    card: card,
+                    billing_details: {
+                        name: "{{ current_user.username }}",
+                        email: "{{ current_user.email }}"
+                    }
+                }
+            }
+        );
+
+        if (result.error) {
+            errorElement.textContent = result.error.message;
+            submitButton.disabled = false;
+            return;
+        }
+
+        if (result.paymentIntent.status === "succeeded") {
+            paymentLog("Payment succeeded");
+            window.location.href =
+              `/payment_success?booking_id=${bookingId}&pi=${result.paymentIntent.id}`;
+        }
+
+    } catch (err) {
+        errorElement.textContent = err.message;
+        submitButton.disabled = false;
+    }
+});
+
+
+setTimeout(() => {
+    const flashes = document.querySelectorAll('.flash-message');
+    flashes.forEach(flash => {
+      flash.style.transition = 'opacity 0.5s ease';
+      flash.style.opacity = '0';
+      setTimeout(() => flash.remove(), 500);
+    });
+  }, 3000); // 3 seconds
+
+function openSupportModal() {
+  document.getElementById('supportModal').style.display = 'flex';
+}
+
+function closeSupportModal() {
+  document.getElementById('supportModal').style.display = 'none';
+}
+
+</script>
+
+
+
+{% endblock %}

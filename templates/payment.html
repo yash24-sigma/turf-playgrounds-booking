@@ -1,0 +1,419 @@
+{% extends "base.html" %}
+
+{# {% block title %}Complete Payment - Turf Playgrounds Booking{% endblock %} #}
+
+{% block content %}
+<div class="container-custom">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="payment-container">
+                <div class="text-center mb-4">
+                    <i class="fas fa-credit-card fa-4x text-primary mb-3"></i>
+                    <h2 class="fw-bold text-primary">Secure Payment</h2>
+                    <p class="text-muted">Complete your booking with a secure payment</p>
+                </div>
+                
+                <!-- Payment Form -->
+                <div class="card payment-card">
+                    <div class="card-body p-4">
+                        <div id="payment-form-container"> <!--form-->
+                            <div class="payment-method-selector mb-4">
+                                <h5 class="fw-bold mb-3">
+                                    <i class="fas fa-payment me-2"></i>Payment Method
+                                </h5>
+                                
+                                <div class="payment-tabs">
+                                    <div class="btn-group w-100" role="group">
+                                        <input type="radio" class="btn-check" name="paymentMethod" 
+                                               id="cardPayment" value="card" checked>
+                                        <label class="btn btn-outline-primary" for="cardPayment">
+                                            <i class="fas fa-credit-card me-2"></i>Credit/Debit Card
+                                        </label>
+                                        
+                                        <input type="radio" class="btn-check" name="paymentMethod" 
+                                               id="upiPayment" value="upi">
+                                        <label class="btn btn-outline-primary" for="upiPayment">
+                                            <i class="fas fa-mobile-alt me-2"></i>UPI Payment
+                                        </label>
+                                        
+                                        <input type="radio" class="btn-check" name="paymentMethod" 
+                                               id="walletPayment" value="wallet">
+                                        <label class="btn btn-outline-primary" for="walletPayment">
+                                            <i class="fas fa-wallet me-2"></i>Wallet
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Card Payment Section -->
+                        <div id="card-payment-section">
+                            <h6 class="fw-bold mb-3">
+                                <i class="fas fa-credit-card me-2"></i>Card Details
+                            </h6>
+                            
+                            <!-- Demo Card Form (Replace with actual Stripe Elements) -->
+                            <div class="demo-payment-form">
+                                <div class="mb-3">
+                                    <label for="card-number" class="form-label">Card Number</label>
+                                    <input type="text" class="form-control" id="card-number" 
+                                           placeholder="1234 5678 9012 3456" maxlength="19">
+                                </div>
+                                
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="expiry" class="form-label">Expiry Date</label>
+                                            <input type="text" class="form-control" id="expiry" 
+                                                   placeholder="MM/YY" maxlength="5">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <div class="mb-3">
+                                            <label for="cvv" class="form-label">CVV</label>
+                                            <input type="text" class="form-control" id="cvv" 
+                                                   placeholder="123" maxlength="4">
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <label for="cardholder-name" class="form-label">Cardholder Name</label>
+                                    <input type="text" class="form-control" id="cardholder-name" 
+                                           placeholder="John Doe" value="{{ current_user.username }}" required>
+                                </div>
+                            </div>
+                            
+                            <!-- Error display -->
+                            <div id="card-errors" role="alert" class="text-danger mb-3"></div>
+                        </div>
+                            
+                            <!-- Security Info -->
+                            <div class="security-info-box p-3 mb-4" 
+                                 style="background: linear-gradient(135deg, #e8f5e8, #f0f8f0); border-radius: 10px;">
+                                <div class="d-flex align-items-center">
+                                    <i class="fas fa-shield-alt fa-2x text-success me-3"></i>
+                                    <div>
+                                        <h6 class="fw-bold text-success mb-1">Your payment is secured by</h6>
+                                        <div class="d-flex align-items-center">
+                                            <strong class="text-primary me-3">STRIPE</strong>
+                                            <i class="fas fa-lock me-1 text-success"></i>
+                                            <small class="text-success">256-bit SSL encryption</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Payment Button -->
+                            <button id="submit-button" type="button" class="btn btn-success btn-lg w-100"> <!--<button id="submit-button" class="btn btn-success btn-lg w-100 mb-3">-->
+                                <span id="button-text">
+                                    <i class="fas fa-lock me-2"></i>Complete Secure Payment
+                                </span>
+                                <div id="spinner" class="spinner-border spinner-border-sm d-none" role="status">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+                            </button>
+                            
+                            <div class="text-center">
+                                <small class="text-muted">
+                                    By completing this payment, you agree to our terms and conditions
+                                </small>
+                            </div>
+                        </div>  <!--</form>-->
+                    </div>
+                </div>
+                
+                <!-- Trust Indicators -->
+                <div class="trust-indicators mt-4">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="trust-item p-3">
+                                <i class="fas fa-shield-alt fa-2x text-success mb-2"></i>
+                                <h6 class="fw-bold">Secure</h6>
+                                <small class="text-muted">SSL Protected</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="trust-item p-3">
+                                <i class="fas fa-undo fa-2x text-info mb-2"></i>
+                                <h6 class="fw-bold">Refundable</h6>
+                                <small class="text-muted">24hr Cancellation</small>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="trust-item p-3">
+                                <i class="fas fa-headset fa-2x text-primary mb-2"></i>
+                                <h6 class="fw-bold">Support</h6>
+                                <small class="text-muted">24/7 Available</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Order Summary Sidebar -->
+        <div class="col-lg-4">
+            <div class="order-summary-card card position-sticky" style="top: 100px;">
+                <div class="card-header bg-primary text-white">
+                    <h6 class="fw-bold mb-0">
+                        <i class="fas fa-receipt me-2"></i>Order Summary
+                    </h6>
+                </div>
+                <div class="card-body">
+                    <div class="booking-summary mb-3">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Booking ID:</span>
+                            <span class="fw-bold">#{{ booking_id }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span class="text-muted">Payment Status:</span>
+                            <span class="badge bg-warning">Pending</span>
+                        </div>
+                    </div>
+                    
+                    <hr>
+                    
+                    <div class="customer-info mb-3">
+                        <h6 class="fw-bold mb-2">Customer Details</h6>
+                        <p class="small text-muted mb-1">
+                            <i class="fas fa-user me-1"></i>{{ current_user.username }}
+                        </p>
+                        <p class="small text-muted mb-0">
+                            <i class="fas fa-envelope me-1"></i>{{ current_user.email }}
+                        </p>
+                    </div>
+                    
+                    <div class="help-section text-center pt-3 border-top">
+                        <p class="small text-muted mb-2">Need help with payment?</p>
+                        <div class="d-grid gap-2">
+                            <a href="#" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-phone me-1"></i>Contact Support
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .payment-card {
+        border: none;
+        box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+    }
+    
+    .payment-tabs .btn {
+        flex: 1;
+        padding: 12px 16px;
+    }
+    
+    .trust-item {
+        transition: transform 0.3s ease;
+    }
+    
+    .trust-item:hover {
+        transform: translateY(-3px);
+    }
+    
+    .order-summary-card {
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    #card-element {
+        background: white;
+        border: 1px solid #ccc;
+        border-radius: 8px;
+        padding: 12px;
+    }
+    
+    .StripeElement {
+        background-color: white;
+        padding: 8px 12px;
+        border-radius: 4px;
+        border: 1px solid transparent;
+        box-shadow: 0 1px 3px 0 #e6ebf1;
+        transition: box-shadow 150ms ease;
+    }
+    
+    .StripeElement--focus {
+        box-shadow: 0 1px 3px 0 #cfd7df;
+    }
+    
+    .StripeElement--invalid {
+        border-color: #fa755a;
+    }
+    
+    @media (max-width: 992px) {
+        .order-summary-card {
+            position: static !important;
+            margin-top: 2rem;
+        }
+    }
+</style>
+
+<script>
+   /* Demo payment processing (for testing without real Stripe keys)
+    document.getElementById('submit-button').addEventListener('click', function() {
+        const cardNumber = document.getElementById('card-number').value;
+        const expiry = document.getElementById('expiry').value;
+        const cvv = document.getElementById('cvv').value;
+        const cardholderName = document.getElementById('cardholder-name').value;
+        
+         Basic validation
+        if (!cardNumber || !expiry || !cvv || !cardholderName.trim()) {
+            document.getElementById('card-errors').textContent = 'Please fill in all card details';
+            return;
+        }
+        
+        if (cardNumber.replace(/\s/g, '').length < 13) {
+            document.getElementById('card-errors').textContent = 'Please enter a valid card number';
+            return;
+        }
+        
+         Show loading state
+        const submitButton = this;
+        const buttonText = document.getElementById('button-text');
+        const spinner = document.getElementById('spinner');
+        
+        submitButton.disabled = true;
+        buttonText.classList.add('d-none');
+        spinner.classList.remove('d-none');
+        
+         Simulate payment processing
+        setTimeout(() => {
+             Redirect to success page (demo)
+            window.location.href = `/payment_success?booking_id={{ booking_id }}`;
+        }, 2000);
+    });
+    
+    Card number formatting
+    document.getElementById('card-number').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\s/g, '').replace(/\D/g, '');
+        let formattedValue = value.replace(/(.{4})/g, '$1 ').trim();
+        if (formattedValue.length > 19) {
+            formattedValue = formattedValue.substring(0, 19);
+        }
+        e.target.value = formattedValue;
+    });
+    
+     Expiry date formatting
+    document.getElementById('expiry').addEventListener('input', function(e) {
+        let value = e.target.value.replace(/\D/g, '');
+        if (value.length >= 2) {
+            value = value.substring(0, 2) + '/' + value.substring(2, 4);
+        }
+        e.target.value = value;
+    });
+    
+    CVV formatting
+    document.getElementById('cvv').addEventListener('input', function(e) {
+        e.target.value = e.target.value.replace(/\D/g, '');
+    });
+    
+    For actual Stripe integration, uncomment below and comment above demo code: */
+    
+    // Initialize Stripe
+    const stripe = Stripe('{{ stripe_public_key }}');
+    const elements = stripe.elements();
+    
+    // Create card element
+    const cardElement = elements.create('card', {
+        style: {
+            base: {
+                fontSize: '16px',
+                color: '#424770',
+                '::placeholder': {
+                    color: '#aab7c4',
+                },
+            },
+        },
+    });
+    //Mount card element
+    cardElement.mount('#card-element');
+    
+    // Handle real-time validation errors from the card Element
+    cardElement.on('change', function(event) {
+        const displayError = document.getElementById('card-errors');
+        if (event.error) {
+            displayError.textContent = event.error.message;
+        } else {
+            displayError.textContent = '';
+        }
+    });
+    
+    // Handle form submission
+    const form = document.getElementById('submit-button').addEventListener('click', async function(event) {
+         event.preventDefault();
+         debugLog('Payment button clicked');                                                       // document.getElementById('payment-form');
+                                                                        //form.addEventListener('submit', async function(event) {
+                                                                                        //event.preventDefault();
+        
+        const submitButton = document.getElementById('submit-button');
+        const buttonText = document.getElementById('button-text');
+        const spinner = document.getElementById('spinner');
+        
+        // Disable submit button and show loading
+        submitButton.disabled = true;
+        buttonText.classList.add('d-none');
+        spinner.classList.remove('d-none');
+        
+        const cardholderName = document.getElementById('cardholder-name').value;
+        
+        const {error, paymentIntent} = await stripe.confirmCardPayment('{{ client_secret }}', {
+            payment_method: {
+                card: cardElement,
+                billing_details: {
+                    name: cardholderName,
+                    email: '{{ current_user.email }}',
+                }
+            }
+        });
+        
+        if (error) {
+            // Show error to customer
+            const errorElement = document.getElementById('card-errors');
+            errorElement.textContent = error.message;
+            
+            // Re-enable submit button
+            submitButton.disabled = false;
+            buttonText.classList.remove('d-none');
+            spinner.classList.add('d-none');
+        } else {
+            // Payment succeeded, redirect to success page
+            window.location.href = `/payment_success?booking_id={{ booking_id }}`;
+        }
+    });
+    
+    // Payment method switching (for future UPI/Wallet integration)
+    document.querySelectorAll('input[name="paymentMethod"]').forEach(function(radio) {
+        radio.addEventListener('change', function() {
+            if (this.value === 'card') {
+                document.getElementById('card-payment-section').style.display = 'block';
+            } else {
+                document.getElementById('card-payment-section').style.display = 'none';
+                // For now, show alert for other payment methods
+                alert('This payment method will be available soon. Please use card payment.');
+                document.getElementById('cardPayment').checked = true;
+                document.getElementById('card-payment-section').style.display = 'block';
+            }
+        });
+    });
+    // NEW ADDED: Debug logging throughout
+    function debugLog(message) {
+        const logElement = document.getElementById('debug-log');
+        const timestamp = new Date().toLocaleTimeString();
+        logElement.innerHTML += `[${timestamp}] ${message}`;
+        console.log(`[Payment Debug] ${message}`);
+    }
+
+    //NEW  ADDED: Better error handling
+    try {
+    // Payment processing code
+    } 
+    catch (error) {
+    debugLog(`Payment processing error: ${error.message}`);
+    // Handle error properly
+    }
+</script>
+{% endblock %}

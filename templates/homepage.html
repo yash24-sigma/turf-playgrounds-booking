@@ -1,0 +1,184 @@
+{% extends "base.html" %}
+
+{# {% block title %}Dashboard - Turf PlayGrounds Booking{% endblock %} #}
+
+{% block content %}
+<!-- Welcome Section -->
+<div class="container-custom pt-5" style="background-color: #333333;">
+    <div class="row">
+        <div class="col-12" >
+            <div class="welcome-header text-center mb-4">
+                <h1 class="display-5 fw-bold text-primary">
+                    Welcome back, {{ current_user.username }}!!!
+                </h1>
+                <p style="color: white;">Find and book your perfect turf</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Search and Filter Section -->
+<div class="search-container  mt-4" style="background-color: #333333;">
+    <div class="container">
+        <form method="GET" class="row g-3">
+            <div class="col-md-4">
+                <label for="search" class="form-label">
+                    <i class="fas fa-search me-2 fw-bold"></i>Search Turfs
+                </label>
+                <input type="text" class="form-control" id="search" name="search" 
+                       placeholder="Search by name or description..." 
+                       value="{{ search_query }}">
+            </div>
+            
+            <div class="col-md-4">
+                <label for="location" class="form-label">
+                    <i class="fas fa-map-marker-alt me-2 fw-bold"></i>Location
+                </label>
+                <select class="form-select" id="location" name="location">
+                    <option value="">All Locations</option>
+                    {% for location in locations %}
+                        <option value="{{ location }}" 
+                                {% if location == location_filter %}selected{% endif %}>
+                            {{ location }}
+                        </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="col-md-4 d-flex align-items-end">
+                <button type="submit" class="btn btn-primary me-2">
+                    <i class="fas fa-search me-2"></i>Search
+                </button>
+                <a href="{{ url_for('homepage') }}" class="btn btn-outline-secondary" style="color:white;">
+                    <i class="fas fa-times me-2" style="color:white"></i>Clear
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Turfs Grid -->
+<div class="container-custom" style="background-color: #333333;">
+    {% if turfs %}
+        <div class="row">
+            <div class="col-12 mb-4">
+                <h3 class="fw-bold text-primary">
+                     <img src="{{ url_for('static', filename='images/god.jpg') }}" class="img-fluid" alt="Description" style="height: 70px; width: 70px;border-radius: 50%; object-fit: cover;"> Available Turfs 
+                    <span class="badge bg-primary">{{ turfs|length }}</span>
+                </h3>
+            </div>
+        </div>
+        
+        <div class="row g-4">
+            {% for turf in turfs %}
+                <div class="col-lg-4 col-md-6">
+                    <div class="card h-100 turf-card">
+                        <div class="position-relative">
+                            <img src="{{turf.image_url }}" class="card-img-top" alt="{{ turf.name }}" 
+                                 style="height: 200px; object-fit: cover;">
+                            <div class="position-absolute top-0 end-0 m-2">
+                                <span class="badge bg-success">
+                                    <i class="fas fa-rupee-sign"></i>{{ "%.0f"|format(turf.price_per_hour) }}/hr
+                                </span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body d-flex flex-column">
+                            <h5 class="card-title fw-bold">{{ turf.name }}</h5>
+                            <p style="color: white;">
+                                <i class="fas fa-map-marker-alt me-1" style="color: white;"></i>{{ turf.location }}
+                            </p>
+                            <p class="card-text flex-grow-1">{{ turf.description[:100] }}...</p>
+                            
+                            <div class="d-flex justify-content-between align-items-center mt-auto">
+                                <div class="btn-group w-100" role="group">
+                                    <a href="{{ url_for('turf_details', turf_id=turf.id) }}" 
+                                       class="btn btn-outline-primary">
+                                        <i class="fas fa-info-circle me-1"></i>Details
+                                    </a>
+                                    <a href="{{ url_for('turf_details', turf_id=turf.id) }}" 
+                                       class="btn btn-primary">
+                                        <i class="fas fa-calendar-plus me-1"></i>Book Now
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="text-center py-5">
+            <i class="fas fa-search fa-5x text-muted mb-4"></i>
+            <h3 class="text-muted">No turfs found</h3>
+            <p class="lead text-muted">Try adjusting your search criteria</p>
+            <a href="{{ url_for('homepage') }}" class="btn btn-primary">
+                <i class="fas fa-refresh me-2"></i>Show All Turfs
+            </a>
+        </div>
+    {% endif %}
+</div>
+
+<!-- Quick Stats Section -->
+<div class="container-custom" style="background-color: #333333;">
+    <div class="row text-center">
+        <div class="col-md-3 col-6">
+            <div class="stat-card p-3">
+                <i class="fas fa-futbol fa-2x text-primary mb-2"></i>
+                <h4 class="fw-bold" style="color: #2b2b2b;">{{ turfs|length }}+</h4>
+                <p style="color: #2b2b2b;" class="fw-bold">Available Turfs</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-card p-3">
+                <i class="fas fa-users fa-2x text-success mb-2"></i>
+                <h4 class="fw-bold" style="color: #2b2b2b;">1000+</h4>
+                <p style="color: #2b2b2b;" class="fw-bold">Happy Players</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-card p-3">
+                <i class="fas fa-calendar-check fa-2x text-info mb-2"></i>
+                <h4 class="fw-bold" style="color: #2b2b2b;">5000+</h4>
+                <p style="color: #2b2b2b;" class="fw-bold">Bookings Made</p>
+            </div>
+        </div>
+        <div class="col-md-3 col-6">
+            <div class="stat-card p-3">
+                <i class="fas fa-star fa-2x text-warning mb-2"></i>
+                <h4 class="fw-bold" style="color: #2b2b2b;">4.8</h4>
+                <p style="color: #2b2b2b;" class="fw-bold">Average Rating</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .turf-card {
+        transition: all 0.3s ease;
+        border: none;
+    }
+    
+    .turf-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.15);
+    }
+    
+    .stat-card {
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 15px;
+        transition: transform 0.3s ease;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-3px);
+    }
+    
+    .welcome-header {
+        padding: 2rem 0;
+        background:#333333;
+        border-radius: 15px;
+        margin-bottom: 2rem;
+    }
+</style>
+{% endblock %}

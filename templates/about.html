@@ -1,0 +1,434 @@
+{% extends "base.html" %}
+
+{# {% block title %}About Us - Turf PlayGrounds Booking {% endblock %} #}
+
+{% block content %}
+<!-- Hero Section -->
+<div class="about-hero text-center text-white py-5 mb-5">
+    <div class="container" >
+        <div class="row">
+            <div class="col-12">
+                <h1 class="display-4 fw-bold mb-4"  style="color:#28a745;">
+                    <i class="fas fa-users me-3"></i>About Turf PlayGrounds Booking
+                </h1>
+                <p class="lead fs-3">
+                    Connecting sports enthusiasts with premium turf facilities across India
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Our Story Section -->
+<div class="container-custom" style="background-color:#333333;">
+    <div class="row align-items-center mb-5">
+        <div class="col-lg-6">
+            <div class="story-content" style="color: white;">
+                <h2 class="display-6 fw-bold text-primary mb-4"><i>Our Story</i></h2>
+                <p  class="lead mb-4">
+                    Founded in 2025, Turf PlayGrounds Booking emerged from a simple idea: make sports accessible to everyone by connecting players with quality turf facilities.
+                </p>
+                <p class="mb-4">
+                    We noticed that finding and booking sports turfs was often complicated, time-consuming, and unreliable. Players struggled to find available slots, while turf owners missed potential bookings due to poor visibility.
+                </p>
+                <p class="mb-4">
+                    Today, we're proud to serve thousands of sports enthusiasts across India, providing a seamless platform that benefits both players and facility owners.
+                </p>
+                
+                <div class="achievements">
+                    <div class="row text-center">
+                        <div class="col-4">
+                            <div class="achievement-item">
+                                <h3 class="fw-bold text-primary">100+</h3>
+                                <p>Partner Turfs</p>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="achievement-item">
+                                <h3 class="fw-bold text-success">5000+</h3>
+                                <p>Happy Players</p>
+                            </div>
+                        </div>
+                        <div class="col-4">
+                            <div class="achievement-item">
+                                <h3 class="fw-bold text-info">15+</h3>
+                                <p>Cities</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="story-image">
+                <img src="{{ url_for('static', filename='images/ronaldo.jpg') }}" class="img-fluid rounded-3 shadow" alt="Motivation Quotes">  
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Developer  Section--> 
+<div class="container-custom" style="background-color: #333333;">
+    <div class="row">
+        <div class="col-12 text-center mb-5">
+           <h2 class="display-6 fw-bold text-primary mt-5"><i>Developer Name</i></h2>
+            <p class="lead " style="color: white;">The passionate developer behind Turf PlayGrounds Booking</p>
+        </div>
+    </div>
+    
+        
+        <div class="col-lg-12 col-md-12">
+            <div class="team-card text-center">
+                <div class="team-avatar mb-3">
+                    <img src="{{ url_for('static', filename='images/yash.jpg') }}" alt="Yash Monde" class="img-fluid developer-photo">
+    
+                
+                </div>
+                <h5 class="fw-bold">Yash Monde
+                <p style="color: white;" class="mb-2">Founder & Developer</p>
+                <p class="small">Tech enthusiast and sports lover, ensuring our platform runs smoothly.</p></h5>
+                <div class="social-links">
+                     <a href="#" class="text-white me-3"><i class="bi bi-instagram"></i><a>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-instagram" viewBox="0 0 16 16">
+                <path d="M8 0C5.829 0 5.556.01 4.703.048 3.85.088 3.269.222 2.76.42a3.9 3.9 0 0 0-1.417.923A3.9 3.9 0 0 0 .42 2.76C.222 3.268.087 3.85.048 4.7.01 5.555 0 5.827 0 8.001c0 2.172.01 2.444.048 3.297.04.852.174 1.433.372 1.942.205.526.478.972.923 1.417.444.445.89.719 1.416.923.51.198 1.09.333 1.942.372C5.555 15.99 5.827 16 8 16s2.444-.01 3.298-.048c.851-.04 1.434-.174 1.943-.372a3.9 3.9 0 0 0 1.416-.923c.445-.445.718-.891.923-1.417.197-.509.332-1.09.372-1.942C15.99 10.445 16 10.173 16 8s-.01-2.445-.048-3.299c-.04-.851-.175-1.433-.372-1.941a3.9 3.9 0 0 0-.923-1.417A3.9 3.9 0 0 0 13.24.42c-.51-.198-1.092-.333-1.943-.372C10.443.01 10.172 0 7.998 0zm-.717 1.442h.718c2.136 0 2.389.007 3.232.046.78.035 1.204.166 1.486.275.373.145.64.319.92.599s.453.546.598.92c.11.281.24.705.275 1.485.039.843.047 1.096.047 3.231s-.008 2.389-.047 3.232c-.035.78-.166 1.203-.275 1.485a2.5 2.5 0 0 1-.599.919c-.28.28-.546.453-.92.598-.28.11-.704.24-1.485.276-.843.038-1.096.047-3.232.047s-2.39-.009-3.233-.047c-.78-.036-1.203-.166-1.485-.276a2.5 2.5 0 0 1-.92-.598 2.5 2.5 0 0 1-.6-.92c-.109-.281-.24-.705-.275-1.485-.038-.843-.046-1.096-.046-3.233s.008-2.388.046-3.231c.036-.78.166-1.204.276-1.486.145-.373.319-.64.599-.92s.546-.453.92-.598c.282-.11.705-.24 1.485-.276.738-.034 1.024-.044 2.515-.045zm4.988 1.328a.96.96 0 1 0 0 1.92.96.96 0 0 0 0-1.92m-4.27 1.122a4.109 4.109 0 1 0 0 8.217 4.109 4.109 0 0 0 0-8.217m0 1.441a2.667 2.667 0 1 1 0 5.334 2.667 2.667 0 0 1 0-5.334"/>
+                </svg>
+                
+                
+                <a href="#" class="text-white me-3"><i class="bi bi-twitter-x"></i></a>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-twitter-x" viewBox="0 0 16 16">
+                <path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.601.75Zm-.86 13.028h1.36L4.323 2.145H2.865z"/>
+                </svg>
+                
+                
+                <a href="#" class="text-white me-3"><i class="bi bi-facebook"></i></a>
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-facebook" viewBox="0 0 16 16">
+                <path d="M16 8.049c0-4.446-3.582-8.05-8-8.05C3.58 0-.002 3.603-.002 8.05c0 4.017 2.926 7.347 6.75 7.951v-5.625h-2.03V8.05H6.75V6.275c0-2.017 1.195-3.131 3.022-3.131.876 0 1.791.157 1.791.157v1.98h-1.009c-.993 0-1.303.621-1.303 1.258v1.51h2.218l-.354 2.326H9.25V16c3.824-.604 6.75-3.934 6.75-7.951"/>
+                </svg>
+                </div>
+            </div>
+        </div>
+       
+<!-- Statistics Section -->
+<div class="container-custom" style="background-color: #333333;" >
+    <div class="stats-section text-center p-5 rounded-3" style="background-color: #333333;">
+        <h2 class="fw-bold text-primary mb-4"><i>Turf PlayGrounds Booking Overview</i></h2>
+        <div class="row">
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stat-item">
+                    <h2 class="fw-bold text-primary counter" data-target="15000">0</h2>
+                    <p style="color: white;">Total Bookings</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stat-item">
+                    <h2 class="fw-bold text-success counter" data-target="120">0</h2>
+                    <p style="color: white;">Partner Turfs</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stat-item">
+                    <h2 class="fw-bold text-info counter" data-target="18">0</h2>
+                    <p style="color: white;">Cities Covered</p>
+                </div>
+            </div>
+            <div class="col-md-3 col-6 mb-4">
+                <div class="stat-item">
+                    <h2 class="fw-bold text-warning">4.8</h2>
+                    <p style="color: white;">Average Rating</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FAQ Section -->
+<div class="container-custom" style="background-color: #333333;">
+    <div class="row">
+        <div class="col-12 text-center mb-5">
+            <h2 class="fw-bold text-primary"><i>Frequently Asked Questions</i></h2>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-lg-8 mx-auto">
+            <div class="accordion" id="faqAccordion">
+                <div class="accordion-item mb-3">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#faq1">
+                            How do I book a turf?
+                        </button>
+                    </h2>
+                    <div id="faq1" class="accordion-collapse collapse show" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body fw-bold">
+                            Simply browse available turfs, select your preferred date and time, 
+                            complete the booking form, and make a secure payment. You'll receive 
+                            instant confirmation via email.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item mb-3">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq2">
+                            Can I cancel my booking?
+                        </button>
+                    </h2>
+                    <div id="faq2" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body fw-bold">
+                            Yes! You can cancel your booking up to 24 hours in advance for a full refund. 
+                            Cancellations within 24 hours may incur charges based on our cancellation policy.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item mb-3">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq3">
+                            What payment methods do you accept?
+                        </button>
+                    </h2>
+                    <div id="faq3" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body fw-bold">
+                            For now , we accept only Credit / Debit cards but further we will  uprgrade to many payment option. 
+                            Payments are processed securely through Stripe.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="accordion-item mb-3">
+                    <h2 class="accordion-header">
+                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#faq4">
+                            How do I become a turf owner partner?
+                        </button>
+                    </h2>
+                    <div id="faq4" class="accordion-collapse collapse" data-bs-parent="#faqAccordion">
+                        <div class="accordion-body fw-bold">
+                            Register as a turf owner during signup, complete your profile, and add your 
+                            turf listings. Our team will verify your facilities and activate your listings.
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .accordion-body {
+         color: #333333; /* A dark grey color */
+    }
+  
+    .story-content p {
+        color:white !important; 
+    }
+
+    
+    .story-content .h3, .story-content p {
+     color:white !important;
+    }
+    
+    .achievement-number {
+        color: #28a745 !important; /*  vibrant green color */
+    }
+    .about-hero {
+        background: #333333;
+        border-radius: 15px; margin-top: 20px; 
+        padding: 20px;
+        
+    }
+    
+    .achievement-item {
+        transition: transform 0.3s ease;
+        
+        
+    }
+    
+    .achievement-item:hover {
+        transform: translateY(-5px);
+        color:black;
+    }
+    
+    .mission-card, .vision-card {
+        transition: transform 0.3s ease;
+        border: none;
+    }
+    
+    .mission-card:hover, .vision-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 30px rgba(0, 0, 0, 0.1);
+    }
+    
+    .value-card {
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 15px;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+    
+    .value-card:hover {
+        transform: translateY(-8px);
+        border-color: #667eea;
+        box-shadow: 0 15px 30px rgba(102, 126, 234, 0.2);
+    }
+    
+    .value-icon i {
+        transition: transform 0.3s ease;
+    }
+    
+    .value-card:hover .value-icon i {
+        transform: scale(1.1);
+    }
+    
+    .team-card {
+        background:#333333 ;
+        color:white;
+        padding: 2rem;
+        border-radius: 15px;
+        transition: transform 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+    }
+    
+    .team-card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+    }
+    
+    .feature-card {
+        background: rgba(255, 255, 255, 0.8);
+        border-radius: 15px;
+        transition: transform 0.3s ease;
+        
+    }
+    
+    .feature-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .contact-item {
+        transition: all 0.3s ease;
+    }
+    
+    .contact-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+    }
+    
+    .stats-section .stat-item {
+        transition: transform 0.3s ease;
+        color: white;
+        
+    }
+    
+    .stats-section .stat-item:hover {
+        transform: scale(1.05);
+        
+    }
+    
+    .accordion-item {
+        border: none;
+        border-radius: 10px ;
+        margin-bottom: 10px;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+       
+    }
+    
+    .accordion-button {
+        border-radius: 10px !important;
+        font-weight: 600;
+    }
+    
+    .accordion-button:not(.collapsed) {
+       background: #333333;
+        color: white;
+    }
+    
+    .social-links a {
+        font-size: 1.2rem;
+        transition: transform 0.3s ease;
+    }
+    
+    .social-links a:hover {
+        transform: scale(1.2);
+    }
+    
+    .stats-section p.text-muted {
+    color: #2b2b2b !important; 
+    }
+
+   
+    .accordion-header { 
+    border: 1px solid #2b2b2b;
+    border-radius: 8px; 
+    padding: 20px; 
+    }
+   
+ 
+    .developer-photo {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%; 
+    object-fit: cover; 
+    }
+</style>
+
+<script>
+    // Animated counter for statistics
+    function animateCounters() {
+        const counters = document.querySelectorAll('.counter');
+        
+        counters.forEach(counter => {
+            const target = parseInt(counter.getAttribute('data-target'));
+            const increment = target / 100;
+            let current = 0;
+            
+            const updateCounter = () => {
+                if (current < target) {
+                    current += increment;
+                    counter.textContent = Math.floor(current);
+                    setTimeout(updateCounter, 20);
+                } else {
+                    counter.textContent = target;
+                }
+            };
+            
+            updateCounter();
+        });
+    }
+    
+    // Trigger animation when stats section comes into view
+    const statsSection = document.querySelector('.stats-section');
+    if (statsSection) {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    animateCounters();
+                    observer.unobserve(entry.target);
+                }
+            });
+        });
+        
+        observer.observe(statsSection);
+    }
+    
+    // Open chat functionality
+    function openChat() {
+        alert('Live chat feature would be integrated here.\n\nFor now, please contact us via:\n📧 support@turfplaygroundsbooking.com\n📞 +91 12345 67890');
+    }
+    
+    // Smooth scrolling for anchor links
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+        anchor.addEventListener('click', function (e) {
+            e.preventDefault();
+            const target = document.querySelector(this.getAttribute('href'));
+            if (target) {
+                target.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                });
+            }
+        });
+    });
+</script>
+{% endblock %}
