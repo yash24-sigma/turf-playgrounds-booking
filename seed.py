@@ -1,9 +1,31 @@
 from app import app, db, User, Turf
 from werkzeug.security import generate_password_hash
 
-existing_owner = User.query.filter_by(username="owner1").first()
+# Initialize database
+with app.app_context():
+    db.create_all()
+   
+    # 1 Create ADMIN user (Runs only once)
+    # ---------------------------------------------------------
+    admin_email = "admin@gmail.com"
+    admin = User.query.filter_by(email=admin_email).first()
 
-if not existing_owner:
+    
+    if not admin:
+        hashed_pw = generate_password_hash("admin123")
+        admin = User(
+            username="admin",
+            email=admin_email,
+            password_hash=hashed_pw,
+            is_admin=True
+        )
+        db.session.add(admin)
+        db.session.commit()
+        print("✔ Admin account created successfully!")
+   
+    #Create sample turfs if none exist
+    if not Turf.query.first():
+        # Create a sample owner
         owner = User(
             username='owner1',
             email='owner@example.com',
@@ -12,7 +34,18 @@ if not existing_owner:
         )
         db.session.add(owner)
         db.session.commit()
-else:
+    existing_owner = User.query.filter_by(username="owner1").first()
+
+    if not existing_owner:
+        owner = User(
+            username='owner1',
+            email='owner@example.com',
+            password_hash=generate_password_hash('password123'),
+            is_owner=True
+        )
+        db.session.add(owner)
+        db.session.commit()
+    else:
         owner = existing_owner
         
         # Create sample turfs
