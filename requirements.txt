@@ -1,41 +1,9 @@
-Software Requirement Specification (SRS)
-
-Turf Playgrounds Booking System
-
-1. Introduction
-This document describes the functional and non-functional requirements of the Turf Playgrounds Booking System.
-
-2. Overall Description
-The system is a web application that allows customers to book sports turfs online and allows owners to manage their turfs and bookings.
-
-3. Functional Requirements
-
-1.	3.1 User Module
-•	User registration and login
-•	Browse available turfs
-•	Select available time slots
-•	Make online payment using Stripe
-•	View booking history
-•	Request booking refund
-2.	3.2 Owner Module
-•	Add, update, delete turfs
-•	View total bookings
-•	View total revenue
-•	View customer booking details
-•	Process refunds
-
-4. Non-Functional Requirements
-
-•	Security: Secure authentication and Stripe payment integration
-•	Performance: System should handle multiple bookings efficiently
-•	Usability: Simple and user-friendly interface
-•	Reliability: Prevent double booking of time slots
-
-5. System Requirements
-•	Operating System: Windows / Linux / macOS
-•	Software: Python 3.x, Flask
-•	Database: SQLite
-•	Browser: Chrome / Edge / Firefox
-
-6. Conclusion
-The Turf Playgrounds Booking System fulfills all required functionalities of an online turf booking system with secure payments and owner management features.
+Flask
+Flask-SQLAlchemy
+Flask-Login
+Flask-Migrate
+python-dotenv
+stripe
+humanize
+requests
+gunicorn
