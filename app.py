@@ -42,8 +42,13 @@ def set_sqlite_pragma(dbapi_connection, connection_record):
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///turf_booking.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
+    "connect_args": {
+        "sslmode": "require"
+    }
+}
 
 
 # Stripe Configuration
@@ -2211,8 +2216,7 @@ def fix_dates():
     return f"Fixed {fixed} bad datetime entries."
 
 # Initialize database
-@app.before_request
-def create_tables():
+with app.app_context():
     db.create_all()
    
     # 1 Create ADMIN user (Runs only once)
