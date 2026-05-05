@@ -26,18 +26,18 @@ import humanize
 from flask_login import logout_user
 from  collections import defaultdict
 import requests
-from sqlalchemy import event
-from sqlalchemy.engine import Engine
-import sqlite3
+# from sqlalchemy import event
+# from sqlalchemy.engine import Engine
+# import sqlite3
 
 load_dotenv()
 
-@event.listens_for(Engine, "connect")
-def set_sqlite_pragma(dbapi_connection, connection_record):
-    if isinstance(dbapi_connection, sqlite3.Connection):
-        cursor = dbapi_connection.cursor()
-        cursor.execute("PRAGMA foreign_keys=ON")
-        cursor.close()
+# @event.listens_for(Engine, "connect")
+# def set_sqlite_pragma(dbapi_connection, connection_record):
+#     if isinstance(dbapi_connection, sqlite3.Connection):
+#         cursor = dbapi_connection.cursor()
+#         cursor.execute("PRAGMA foreign_keys=ON")
+#         cursor.close()
 
 
 app = Flask(__name__)
@@ -76,7 +76,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password_hash = db.Column(db.String(120), nullable=False)
+    password_hash = db.Column(db.String(300), nullable=False)
     is_owner = db.Column(db.Boolean, default=False)
     is_admin = db.Column(db.Boolean, default=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -2238,8 +2238,19 @@ with app.app_context():
         print("✔ Admin account created successfully!")
    
     # Create sample turfs if none exist
-    if not Turf.query.first():
-        # Create a sample owner
+    # if not Turf.query.first():
+    #     # Create a sample owner
+    #     owner = User(
+    #         username='owner1',
+    #         email='owner@example.com',
+    #         password_hash=generate_password_hash('password123'),
+    #         is_owner=True
+    #     )
+    #     db.session.add(owner)
+    #     db.session.commit()
+    existing_owner = User.query.filter_by(username="owner1").first()
+
+    if not existing_owner:
         owner = User(
             username='owner1',
             email='owner@example.com',
@@ -2248,6 +2259,8 @@ with app.app_context():
         )
         db.session.add(owner)
         db.session.commit()
+    else:
+        owner = existing_owner
         
         # Create sample turfs
         sample_turfs = [
