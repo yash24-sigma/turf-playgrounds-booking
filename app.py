@@ -26,11 +26,21 @@ import humanize
 from flask_login import logout_user
 from  collections import defaultdict
 import requests
+from supabase import create_client
+import uuid
 # from sqlalchemy import event
 # from sqlalchemy.engine import Engine
 # import sqlite3
 
 load_dotenv()
+
+SUPABASE_URL = os.getenv("SUPABASE_URL")
+SUPABASE_KEY = os.getenv("SUPABASE_KEY")
+
+supabase = create_client(
+    SUPABASE_URL,
+    SUPABASE_KEY
+)
 
 # @event.listens_for(Engine, "connect")
 # def set_sqlite_pragma(dbapi_connection, connection_record):
@@ -266,8 +276,8 @@ def admin_required(f):
     return wrapper
 
 #Turf  images Source
-UPLOAD_FOLDER = 'static/images'
-app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
+# UPLOAD_FOLDER = 'static/images'
+# app.config["UPLOAD_FOLDER"] = UPLOAD_FOLDER
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
 def allowed_file(filename):
@@ -1935,13 +1945,19 @@ def add_turf():
             available_days = request.form.getlist("available_days")
             available_days_str = ",".join(available_days)
 
-            # Upload logic
+           # Upload logic using Supabase Storage
             if image_file and image_file.filename != "" and allowed_file(image_file.filename):
-                filename = secure_filename(image_file.filename)
-                save_path = os.path.join(app.root_path, UPLOAD_FOLDER, filename)
-                image_file.save(save_path)
 
-                image_url = f"/static/images/{filename}"  
+                filename = f"{uuid.uuid4()}_{secure_filename(image_file.filename)}"
+
+                file_data = image_file.read()
+
+                supabase.storage.from_("turf-images").upload(
+                    filename,
+                    file_data
+                )
+
+                image_url = supabase.storage.from_("turf-images").get_public_url(filename)
 
             else:
                 image_url = "/static/images/default.jpg"
@@ -1999,12 +2015,24 @@ def edit_turf(turf_id):
             new_image = request.files.get('image')
             new_image_url = turf.image_url  # keeps old image
 
-            if new_image and new_image.filename != "" and allowed_file(new_image.filename):
-                filename = secure_filename(new_image.filename)
-                save_path = os.path.join(app.root_path, UPLOAD_FOLDER, filename)
-                new_image.save(save_path)
+            # if new_image and new_image.filename != "" and allowed_file(new_image.filename):
+            #     filename = secure_filename(new_image.filename)
+            #     save_path = os.path.join(app.root_path, UPLOAD_FOLDER, filename)
+            #     new_image.save(save_path)
 
-                new_image_url = f"/static/images/{filename}"
+            #     new_image_url = f"/static/images/{filename}"
+            if new_image and new_image.filename != "" and allowed_file(new_image.filename):
+
+                filename = f"{uuid.uuid4()}_{secure_filename(new_image.filename)}"
+
+                file_data = new_image.read()
+
+                supabase.storage.from_("turf-images").upload(
+                    filename,
+                    file_data
+                )
+
+                new_image_url = supabase.storage.from_("turf-images").get_public_url(filename)
 
             turf.name = new_name
             turf.price_per_hour = float(new_price)
