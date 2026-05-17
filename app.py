@@ -37,10 +37,13 @@ load_dotenv()
 SUPABASE_URL = os.getenv("SUPABASE_URL")
 SUPABASE_KEY = os.getenv("SUPABASE_KEY")
 
-supabase = create_client(
-    SUPABASE_URL,
-    SUPABASE_KEY
-)
+supabase = None
+
+if SUPABASE_URL and SUPABASE_KEY:
+    supabase = create_client(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    )
 
 # @event.listens_for(Engine, "connect")
 # def set_sqlite_pragma(dbapi_connection, connection_record):
@@ -52,7 +55,12 @@ supabase = create_client(
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = os.getenv("SECRET_KEY")
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("DATABASE_URL")
+DATABASE_URL = os.getenv("DATABASE_URL")
+
+if not DATABASE_URL:
+    raise ValueError("DATABASE_URL environment variable missing")
+
+app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URL
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
     "connect_args": {
@@ -63,8 +71,7 @@ app.config['SQLALCHEMY_ENGINE_OPTIONS'] = {
 
 # Stripe Configuration
 stripe.api_key = os.getenv("STRIPE_SECRET_KEY")  # Replace with  actual Stripe secret key
-STRIPE_PUBLISHABLE_KEY = "pk_test_51RxU4f4XZ7d53ETuWSPMdxGdkpzbIO1EluWJEKcrikvwacHblcIgmtWn45QQSWf0DDNL0zgzs0Z7GkQbgG0ddYS900085XdRaJ"  # Replace with actual Stripe publishable key
-
+STRIPE_PUBLISHABLE_KEY = os.getenv("STRIPE_PUBLISHABLE_KEY")  # Replace with actual Stripe publishable key
 
 # Email Configuration
 EMAIL_HOST = 'smtp.gmail.com'
@@ -1934,14 +1941,24 @@ def add_turf():
             address = request.form.get('address')
             image_file = request.files.get('image')
             image_url = None
-            opening_time = datetime.strptime(request.form.get("opening_time"), "%H:%M").time()
-            closing_time = datetime.strptime( request.form.get("closing_time"), "%H:%M").time()
+            opening_time = request.form.get("opening_time")
+            if opening_time:
+                opening_time = datetime.strptime(opening_time, "%H:%M").time()
+            else:
+                opening_time = None
+            closing_time = request.form.get("closing_time")
+            if closing_time:
+                closing_time = datetime.strptime(closing_time, "%H:%M").time()
+            else:
+                closing_time = None
             contact_phone = request.form.get("contact_phone")
             contact_email = request.form.get("contact_email")
             surface_type = request.form.get("surface_type")
             length = request.form.get("length")
             width = request.form.get("width")
-            player_capacity = request.form.get("player_capacity")
+            length = int(length) if length else 0
+            width = int(width) if width else 0
+            player_capacity = request.form.get("player_capacity","0")
             available_days = request.form.getlist("available_days")
             available_days_str = ",".join(available_days)
 

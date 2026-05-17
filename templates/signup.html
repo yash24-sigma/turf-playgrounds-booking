@@ -5,7 +5,15 @@
 {% block content %}
 
 
-
+ {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} flash-message">
+                                {{ message }}
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+{% endwith %}
 
 <div class="container-custom" style="background-color:#333333" ;>
     <div class="row justify-content-center">
@@ -15,15 +23,7 @@
                 <h2 class="fw-bold text-primary">Join Turf PlayGrounds Booking</h2>
                 <p style="color:white;">Create your account to start booking</p>
             </div>
-             {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }} flash-message">
-                                {{ message }}
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
+            
             <form method="POST" class="needs-validation" novalidate autocomplete="off">
                
                 <div class="mb-3">
